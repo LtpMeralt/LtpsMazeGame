@@ -17,6 +17,8 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         input[type="color"] { padding: 0; border: none; border-radius: 4px; overflow: hidden; }
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
@@ -143,11 +145,12 @@
                 <input type="text" id="editor-level-name" placeholder="Level Name" class="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-500 outline-none w-48">
                 <button onclick="openLevelSettings()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm font-semibold transition">⚙️ Settings</button>
             </div>
-            <div class="flex gap-2 bg-slate-900/50 p-1 rounded-lg border border-slate-700">
-                <button onclick="setLayer(0)" id="btn-layer-0" class="px-3 py-1 rounded text-sm font-bold bg-indigo-600">L1</button>
-                <button onclick="setLayer(1)" id="btn-layer-1" class="px-3 py-1 rounded text-sm font-bold text-slate-400 hover:text-white">L2</button>
-                <button onclick="setLayer(2)" id="btn-layer-2" class="px-3 py-1 rounded text-sm font-bold text-slate-400 hover:text-white">L3</button>
+            
+            <!-- Dynamic Layers Container -->
+            <div id="layer-controls" class="flex gap-2 bg-slate-900/50 p-1 rounded-lg border border-slate-700 overflow-x-auto no-scrollbar max-w-[200px] sm:max-w-[350px]">
+                <!-- Populated by renderLayerButtons -->
             </div>
+
             <div class="flex gap-3">
                 <button onclick="testLevel()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-1.5 rounded-lg font-bold shadow-lg shadow-emerald-900/50 transition">▶ Playtest</button>
                 <button onclick="saveLevel(false)" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-1.5 rounded-lg font-bold shadow-lg transition">Upload Public</button>
@@ -241,7 +244,7 @@
         let e_tool = 'select';
         let e_selectedIds = new Set();
         let e_cam = { x: 0, y: 0, zoom: 1 };
-        let e_meta = { width: 40, height: 40, zoom: 1, maxHealth: 3 };
+        let e_meta = { width: 40, height: 40, zoom: 1, maxHealth: 3, layerCount: 3 };
         let e_keys = {};
         window.e_verified = false; // Must be true to publish
         
@@ -482,12 +485,42 @@
         };
         window.adminDelUsr = async (id) => { if(confirm("Ban user?")) await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'users', id)); };
 
+        window.renderLayerButtons = () => {
+            const container = document.getElementById('layer-controls');
+            if(!container) return;
+            let html = '';
+            const count = e_meta.layerCount || 3;
+            for(let i=0; i<count; i++) {
+                const isActive = (i === e_layer);
+                const classes = isActive 
+                    ? "px-3 py-1 rounded text-sm font-bold bg-indigo-600 transition min-w-[32px] flex-shrink-0" 
+                    : "px-3 py-1 rounded text-sm font-bold text-slate-400 hover:text-white bg-slate-800 transition min-w-[32px] flex-shrink-0";
+                html += `<button onclick="setLayer(${i})" id="btn-layer-${i}" class="${classes}">L${i+1}</button>`;
+            }
+            html += `<button onclick="addLayer()" class="px-3 py-1 rounded text-sm font-bold bg-emerald-600 hover:bg-emerald-500 transition min-w-[32px] flex-shrink-0" title="Add Layer">+</button>`;
+            container.innerHTML = html;
+        };
+
+        window.addLayer = () => {
+            e_meta.layerCount = (e_meta.layerCount || 3) + 1;
+            setLayer(e_meta.layerCount - 1);
+        };
+
+        window.setLayer = (l) => {
+            e_layer = l; 
+            e_selectedIds.clear();
+            renderLayerButtons();
+            drawEditor();
+        };
+
         window.openEditor = () => { 
             showScreen('editor'); 
             window.editId = null; 
             window.e_verified = false;
             e_blocks = []; 
             e_cam = {x:0, y:0, zoom:1}; 
+            e_meta = { width: 40, height: 40, zoom: 1, maxHealth: 3, layerCount: 3 }; 
+            setLayer(0); 
             setTool('select'); 
             drawEditor(); 
         };
@@ -506,15 +539,6 @@
             e_meta.maxHealth = parseInt(document.getElementById('cfg-health').value) || 3;
             closeLevelSettings(); 
             window.e_verified = false;
-            drawEditor();
-        };
-
-        window.setLayer = (l) => {
-            e_layer = l; e_selectedIds.clear();
-            [0,1,2].forEach(x => {
-                let b = document.getElementById('btn-layer-'+x);
-                b.className = x===l ? "px-3 py-1 rounded text-sm font-bold bg-indigo-600" : "px-3 py-1 rounded text-sm font-bold text-slate-400 hover:text-white bg-slate-800";
-            });
             drawEditor();
         };
 
@@ -735,12 +759,21 @@
             document.getElementById('editor-level-name').value = l.name;
             e_meta = l.meta || { width: 40, height: 40, zoom: 1, maxHealth: 3 };
             window.e_verified = false;
+            
             try { 
                 const p = JSON.parse(l.grid);
                 if(p[0] && !p[0].id) e_blocks = p.map(b => ({ ...b, id: generateId(), layer: b.layer||0, rotation: b.rotation||0 }));
                 else e_blocks = p;
             } catch(e) { e_blocks = []; }
-            window.editId = id; showScreen('editor'); e_cam = { x:(e_meta.width*TILE)/2, y:(e_meta.height*TILE)/2, zoom:1 }; drawEditor();
+
+            if(!e_meta.layerCount) {
+                let maxL = 2; // legacy default had L0, L1, L2
+                e_blocks.forEach(b => { if(b.layer > maxL) maxL = b.layer; });
+                e_meta.layerCount = maxL + 1;
+            }
+
+            window.editId = id; showScreen('editor'); e_cam = { x:(e_meta.width*TILE)/2, y:(e_meta.height*TILE)/2, zoom:1 }; 
+            setLayer(0); // Sets initial layer, renders buttons, and draws
         };
 
         window.saveLevel = async (isPriv) => {
