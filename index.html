@@ -150,7 +150,6 @@
                 <button onclick="openLevelSettings()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm font-semibold transition">⚙️ Settings</button>
             </div>
             
-            <!-- Dynamically scrollable layers view panel -->
             <div class="flex items-center gap-2 max-w-[200px] sm:max-w-[400px]">
                 <div id="layer-controls" class="flex gap-1 bg-slate-900/50 p-1 rounded-lg border border-slate-700 overflow-x-auto no-scrollbar scroll-smooth">
                     <!-- Populated by renderLayerButtons -->
@@ -164,7 +163,8 @@
             </div>
         </header>
         <div class="flex flex-1 overflow-hidden relative min-h-0">
-            <div class="w-64 glass-panel flex flex-col p-4 gap-4 z-10 border-r border-slate-700/50 overflow-y-auto min-h-0">
+            <!-- FIXED: Entire left sidebar is fully scrollable now -->
+            <div class="w-64 glass-panel flex flex-col p-4 gap-4 z-10 border-r border-slate-700/50 overflow-y-auto h-full shrink-0">
                 <div class="shrink-0">
                     <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tools</h3>
                     <div class="grid grid-cols-2 gap-2">
@@ -180,14 +180,14 @@
                         <button onclick="setTool('erase')" id="tool-erase" class="tool-btn bg-rose-900/50 rounded-lg p-2 text-sm font-semibold transition">🗑️ Erase</button>
                     </div>
                 </div>
-                <div id="properties-panel" class="bg-slate-900/50 p-3 rounded-xl border border-slate-700 flex-1 flex flex-col min-h-0 overflow-hidden">
+                <!-- FIXED: Property panel isn't restricted by flex-1 and will seamlessly scroll within the parent -->
+                <div id="properties-panel" class="bg-slate-900/50 p-3 rounded-xl border border-slate-700 flex flex-col shrink-0">
                     <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 shrink-0">Properties</h3>
-                    <div class="flex flex-col gap-3 text-sm flex-1 min-h-0 overflow-y-auto pr-2 pb-2">
+                    <div class="flex flex-col gap-3 text-sm pb-2">
                         <label class="flex justify-between items-center shrink-0">Color: <input type="color" id="prop-color" value="#ffffff" class="w-8 h-8" onchange="updateProp()"></label>
                         <label class="flex justify-between items-center shrink-0">Solid: <input type="checkbox" id="prop-solid" checked class="w-4 h-4 accent-indigo-500" onchange="updateProp()"></label>
                         <label class="flex justify-between items-center shrink-0">Pushblock: <input type="checkbox" id="prop-pushblock" class="w-4 h-4 accent-indigo-500" onchange="updateProp()"></label>
                         
-                        <!-- Transparency control with slider and manual direct value entry -->
                         <div class="flex flex-col gap-1">
                             <div class="flex justify-between items-center">
                                 <span>Alpha (0-1):</span>
@@ -196,7 +196,6 @@
                             <input type="range" id="prop-alpha" min="0" max="1" step="0.05" value="1" class="w-full accent-indigo-500" oninput="syncAlphaInputs(this.value)">
                         </div>
 
-                        <!-- Glow intensity property slider and manual direct value entry -->
                         <div class="flex flex-col gap-1 border-t border-slate-800 pt-2">
                             <div class="flex justify-between items-center">
                                 <span>Glow Size (0-50):</span>
@@ -229,7 +228,6 @@
                             <div id="prop-trig-params" class="flex flex-col gap-2 text-xs"></div>
                         </div>
 
-                        <!-- Saved custom colors palette feature with export/import functionality -->
                         <div class="mt-4 pt-3 border-t border-slate-700">
                             <div class="flex justify-between items-center">
                                 <span class="text-xs font-bold text-indigo-400 uppercase tracking-wide">Saved Colors</span>
@@ -301,7 +299,7 @@
         let e_cam = { x: 0, y: 0, zoom: 1 };
         let e_meta = { width: 40, height: 40, zoom: 1, maxHealth: 3, layerCount: 3, gridStep: 1, brushSize: 1 };
         let e_keys = {};
-        window.e_verified = false; // Must be true to publish
+        window.e_verified = false; 
         
         // Editor Interaction
         let isDrawing = false, isErasing = false, isSelecting = false, isDragging = false;
@@ -327,9 +325,16 @@
             return Math.max(0.125, Math.min(step, 1));
         }
 
+        // FIXED: Using floor prevents the brush from targeting the adjacent tile on the positive boundaries
+        function floorToGridUnits(value, meta) {
+            const step = getGridStep(meta);
+            return Math.round(Math.floor(value / step) * step * 1000) / 1000;
+        }
+
+        // General grid snap helper using rounding
         function snapToGridUnits(value, meta) {
             const step = getGridStep(meta);
-            return Math.round(value / step) * step;
+            return Math.round(Math.round(value / step) * step * 1000) / 1000;
         }
 
         function getBlockSize(block) {
@@ -389,7 +394,6 @@
             }
         };
 
-        // Load custom local saved colors
         function loadPaletteFromStorage() {
             const saved = localStorage.getItem('ltp_maze_custom_palette');
             if (saved) {
@@ -406,7 +410,7 @@
             const currentC = document.getElementById('prop-color').value;
             if(!localColors.includes(currentC)) {
                 localColors.unshift(currentC);
-                if(localColors.length > 24) localColors.pop(); // Keep palette at a sensible limit
+                if(localColors.length > 24) localColors.pop(); 
                 localStorage.setItem('ltp_maze_custom_palette', JSON.stringify(localColors));
                 renderSavedColorsUI();
             }
@@ -428,7 +432,6 @@
             const code = document.getElementById('palette-share-code').value.trim();
             if(!code) return showMsg("Error", "Please input a valid palette share code first.");
             try {
-                // Expects format like: #ff0044,#aa00ff,#ffffff or raw JSON
                 let imported = [];
                 if (code.startsWith('[')) {
                     imported = JSON.parse(code);
@@ -458,7 +461,6 @@
                         <button onclick="removeColorFromPalette(event, '${color}')" class="absolute -top-1 -right-1 hidden group-hover:flex items-center justify-center bg-rose-600 text-white rounded-full w-3.5 h-3.5 text-[8px] font-black leading-none hover:bg-rose-500 shadow" title="Delete">×</button>
                     </div>`;
             });
-            // Update copy code input
             document.getElementById('palette-share-code').value = localColors.join(',');
         }
 
@@ -495,7 +497,7 @@
                     if(document.getElementById('screen-login').classList.contains('hidden') === false){
                         showScreen('menu');
                         showSubMenu('play');
-                        window.curFlt = 'all'; // Default to Recent so they see levels immediately
+                        window.curFlt = 'all'; 
                     }
                     if(u.username === 'LtpMer') document.getElementById('admin-btn').classList.remove('hidden');
                 } else { localStorage.removeItem('ltp_maze_uid'); showScreen('login'); }
@@ -686,7 +688,6 @@
         window.addLayer = () => {
             e_meta.layerCount = (e_meta.layerCount || 3) + 1;
             setLayer(e_meta.layerCount - 1);
-            // Scroll to the end of layers list
             setTimeout(() => {
                 const container = document.getElementById('layer-controls');
                 container.scrollLeft = container.scrollWidth;
@@ -757,7 +758,6 @@
             document.getElementById('prop-tag').value = ''; 
         }
 
-        // Keep Alpha inputs synchronized and update selection properties
         window.syncAlphaInputs = (val) => {
             let floatVal = parseFloat(val);
             if (isNaN(floatVal)) floatVal = 1;
@@ -769,7 +769,6 @@
             updateProp();
         };
 
-        // Keep Glow inputs synchronized and update selection properties
         window.syncGlowInputs = (val) => {
             let intVal = parseInt(val);
             if (isNaN(intVal)) intVal = 0;
@@ -846,12 +845,18 @@
             drawEditor();
         };
 
+        // FIXED: Using floor grid mapping prevents the brush from targeting the adjacent tile
         function getMousePos(e) {
             const r = edCanvas.getBoundingClientRect();
             const rawX = e.clientX - r.left, rawY = e.clientY - r.top;
             const worldX = (rawX - edCanvas.width/2) / e_cam.zoom + e_cam.x;
             const worldY = (rawY - edCanvas.height/2) / e_cam.zoom + e_cam.y;
-            return { wx: worldX, wy: worldY, gx: snapToGridUnits(worldX / TILE, e_meta), gy: snapToGridUnits(worldY / TILE, e_meta) };
+            return { 
+                wx: worldX, 
+                wy: worldY, 
+                gx: floorToGridUnits(worldX / TILE, e_meta), 
+                gy: floorToGridUnits(worldY / TILE, e_meta) 
+            };
         }
 
         function beginPaintStroke() {
@@ -866,8 +871,8 @@
             for (let dx = -half; dx < -half + brush; dx++) {
                 for (let dy = -half; dy < -half + brush; dy++) {
                     cells.push({
-                        x: snapToGridUnits(pos.gx + dx * step, e_meta),
-                        y: snapToGridUnits(pos.gy + dy * step, e_meta)
+                        x: Math.round((pos.gx + dx * step) * 1000) / 1000,
+                        y: Math.round((pos.gy + dy * step) * 1000) / 1000
                     });
                 }
             }
@@ -963,7 +968,6 @@
                     document.getElementById('prop-solid').checked = first.solid;
                     document.getElementById('prop-pushblock').checked = !!first.pushblock;
                     
-                    // Sync our upgraded dual Inputs for Selection alpha and glow
                     syncAlphaInputs(first.alpha !== undefined ? first.alpha : 1);
                     syncGlowInputs(first.glow !== undefined ? first.glow : 0);
                     
@@ -1020,7 +1024,6 @@
             drawEditor();
         }
 
-        // Draw helper to connect triggers with visual lines & arrows
         function drawVisualArrow(ctx, fromX, fromY, toX, toY, color = '#f472b6', width = 2) {
             ctx.save();
             ctx.strokeStyle = color;
@@ -1033,7 +1036,6 @@
             ctx.lineTo(toX, toY);
             ctx.stroke();
 
-            // Arrow head
             const angle = Math.atan2(toY - fromY, toX - fromX);
             ctx.setLineDash([]);
             ctx.beginPath();
@@ -1060,7 +1062,7 @@
             edCtx.strokeStyle = 'rgba(99,102,241,0.5)'; edCtx.lineWidth = 2; edCtx.strokeRect(0, 0, e_meta.width*TILE, e_meta.height*TILE);
 
             if (e_tool !== 'select') {
-                const hover = { gx: snapToGridUnits(currentMouseX / TILE, e_meta), gy: snapToGridUnits(currentMouseY / TILE, e_meta) };
+                const hover = { gx: floorToGridUnits(currentMouseX / TILE, e_meta), gy: floorToGridUnits(currentMouseY / TILE, e_meta) };
                 const cells = brushCellsAt(hover).filter(cell => cell.x >= 0 && cell.x < e_meta.width && cell.y >= 0 && cell.y < e_meta.height);
                 if (cells.length) {
                     edCtx.save();
@@ -1082,7 +1084,6 @@
                 else edCtx.globalAlpha = (b.alpha !== undefined ? b.alpha : 1);
                 
                 const bw = TILE * getBlockSize(b);
-                // Draw custom glow around blocks in editor if intensity > 0
                 if(b.glow && b.glow > 0) {
                     edCtx.save();
                     edCtx.shadowBlur = b.glow * e_cam.zoom;
@@ -1109,15 +1110,13 @@
             });
             edCtx.globalAlpha = 1;
 
-            // DRAW TRIGGER CONNECTOR ARROWS & LOGIC VISUALIZERS
             sorted.forEach(b => {
-                // Focus arrows either if the trigger is currently selected, or just render them at lower opacity
                 if (b.type === 'trigger' && b.layer === e_layer) {
                     const fromX = b.x * TILE + TILE/2;
                     const fromY = b.y * TILE + TILE/2;
                     const isSelected = e_selectedIds.has(b.id);
                     const alpha = isSelected ? 1 : 0.45;
-                    const color = isSelected ? '#a855f7' : '#ec4899'; // purple if selected, pink if general
+                    const color = isSelected ? '#a855f7' : '#ec4899'; 
 
                     edCtx.save();
                     edCtx.globalAlpha = alpha;
@@ -1127,7 +1126,6 @@
                         const targetY = (b.tData.y || 0) * TILE + TILE/2;
                         drawVisualArrow(edCtx, fromX, fromY, targetX, targetY, color, isSelected ? 3 : 1.5);
                         
-                        // Draw a target camera reticle
                         edCtx.strokeStyle = color;
                         edCtx.lineWidth = 2;
                         edCtx.beginPath();
@@ -1139,24 +1137,21 @@
                         edCtx.stroke();
                     } 
                     else if ((b.action === 'MOVE_TAG' || b.action === 'ROTATE_TAG' || b.action === 'SET_PROPERTY') && b.tData && b.tData.tag) {
-                        // Find all blocks with target tag
                         const targets = e_blocks.filter(x => x.tag === b.tData.tag);
                         targets.forEach(t => {
                             const toX = t.x * TILE + TILE/2;
                             const toY = t.y * TILE + TILE/2;
                             drawVisualArrow(edCtx, fromX, fromY, toX, toY, color, isSelected ? 3 : 1.5);
                             
-                            // Highlight the target block outline
                             edCtx.strokeStyle = color;
                             edCtx.lineWidth = isSelected ? 3 : 1.5;
                             edCtx.strokeRect(t.x*TILE - 2, t.y*TILE - 2, (TILE * getBlockSize(t)) + 4, (TILE * getBlockSize(t)) + 4);
                             
-                            // If action isMOVE_TAG, draw a ghost block outline representing its destination
                             if (b.action === 'MOVE_TAG') {
                                 const destX = (t.x + (b.tData.mx || 0)) * TILE;
                                 const destY = (t.y + (b.tData.my || 0)) * TILE;
                                 edCtx.save();
-                                edCtx.strokeStyle = '#22c55e'; // Green for movement endpoint
+                                edCtx.strokeStyle = '#22c55e';
                                 edCtx.lineWidth = 1.5;
                                 edCtx.setLineDash([4, 4]);
                                 edCtx.strokeRect(destX + 2, destY + 2, TILE - 4, TILE - 4);
@@ -1189,13 +1184,13 @@
             } catch(e) { e_blocks = []; }
 
             if(!e_meta.layerCount) {
-                let maxL = 2; // legacy default had L0, L1, L2
+                let maxL = 2; 
                 e_blocks.forEach(b => { if(b.layer > maxL) maxL = b.layer; });
                 e_meta.layerCount = maxL + 1;
             }
 
             window.editId = id; showScreen('editor'); e_cam = { x:(e_meta.width*TILE)/2, y:(e_meta.height*TILE)/2, zoom:1 }; 
-            setLayer(0); // Sets initial layer, renders buttons, and draws
+            setLayer(0); 
         };
 
         window.saveLevel = async (isPriv) => {
@@ -1204,7 +1199,6 @@
             if(!e_blocks.some(x=>x.type==='start')) return showMsg("Error", "Need a Start block.");
             if(!e_blocks.some(x=>x.type==='end' || (x.type==='trigger' && x.action==='WIN'))) return showMsg("Warning", "No End or WIN trigger. Level impossible?");
 
-            // If making public, require verification
             if(!isPriv && !window.e_verified) {
                 return showMsg("Verification Required", "You must successfully playtest and beat the level before publishing it publicly.");
             }
@@ -1286,7 +1280,6 @@
             if(!isPlaying) return;
             const dt = (time - lastTime) / 1000; lastTime = time;
             
-            // Process Tweens
             for(let i=g_tweens.length-1; i>=0; i--) {
                 let tw = g_tweens[i];
                 tw.t += dt;
@@ -1334,7 +1327,6 @@
                 let nx = p.x + dx;
                 let ny = p.y + dy;
                 
-                // Slide Collision X
                 let hitX = false;
                 for(let b of solids) {
                     const bw = TILE * getBlockSize(b);
@@ -1345,7 +1337,6 @@
                 }
                 if(!hitX) p.x = nx;
                 
-                // Slide Collision Y
                 let hitY = false;
                 for(let b of solids) {
                     const bw = TILE * getBlockSize(b);
@@ -1356,12 +1347,10 @@
                 }
                 if(!hitY) p.y = ny;
 
-                // Level Bounds
                 if(p.x < 0) p.x = 0; if(p.y < 0) p.y = 0;
                 if(p.x > g_meta.width*TILE - p.w) p.x = g_meta.width*TILE - p.w;
                 if(p.y > g_meta.height*TILE - p.h) p.y = g_meta.height*TILE - p.h;
 
-                // Process Blocks / Triggers
                 for(let b of g_blocks) {
                     const bw = TILE * getBlockSize(b);
                     if(AABB(p.x, p.y, p.w, p.h, b.px, b.py, bw, bw)) {
@@ -1387,7 +1376,6 @@
                 }
             }
 
-            // Update particles
             for (let i = g_particles.length - 1; i >= 0; i--) {
                 const p = g_particles[i];
                 p.t += dt;
@@ -1398,7 +1386,6 @@
                 if (p.t >= p.life) g_particles.splice(i, 1);
             }
 
-            // Camera follow
             if(alive > 0 && !g_cam.active && g_players[0]) {
                 g_cam.x += (g_players[0].x - g_cam.x) * 0.1;
                 g_cam.y += (g_players[0].y - g_cam.y) * 0.1;
@@ -1534,13 +1521,11 @@
             plCtx.scale(g_cam.zoom, g_cam.zoom);
             plCtx.translate(-g_cam.x, -g_cam.y);
 
-            // Draw level blocks
             const sortedBlocks = [...g_blocks].sort((a,b) => a.layer - b.layer);
             sortedBlocks.forEach(b => {
                 const bw = TILE * getBlockSize(b);
                 plCtx.globalAlpha = b.alpha !== undefined ? b.alpha : 1;
                 
-                // Process upgraded Custom Block Glow Size
                 if (b.glow && b.glow > 0) {
                     plCtx.save();
                     plCtx.shadowBlur = b.glow * g_cam.zoom;
@@ -1561,7 +1546,6 @@
                 }
             });
 
-            // Draw particles from triggers
             g_particles.forEach(pt => {
                 plCtx.save();
                 plCtx.globalAlpha = Math.max(0, 1 - (pt.t / pt.life));
@@ -1572,10 +1556,9 @@
                 plCtx.restore();
             });
 
-            // Draw Players (with Optional Glow property)
             g_players.forEach(p => {
                 if(p.health <= 0) return;
-                if(p.invuln > 0 && Math.floor(time / 150) % 2 === 0) return; // Damage blink
+                if(p.invuln > 0 && Math.floor(time / 150) % 2 === 0) return; 
                 
                 plCtx.globalAlpha = 1;
                 plCtx.fillStyle = window.currentUser?.color || '#00ffff';
@@ -1586,7 +1569,7 @@
                 }
                 
                 plCtx.fillRect(p.x, p.y, p.w, p.h);
-                plCtx.shadowBlur = 0; // reset shadow so it doesn't bleed
+                plCtx.shadowBlur = 0; 
             });
 
             plCtx.restore();
