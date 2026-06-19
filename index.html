@@ -19,112 +19,9 @@
         ::-webkit-scrollbar-thumb:hover { background: #64748b; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* NEW UI OVERHAUL STYLES */
-        .editor-sidebar {
-            background: #111827;
-            box-shadow: 4px 0 25px rgba(0,0,0,0.5);
-        }
-        .editor-panel {
-            background: #1f2937;
-            border: 1px solid #374151;
-            border-radius: 0.75rem;
-        }
-        .custom-scroll {
-            scrollbar-width: thin;
-            scrollbar-color: #4b5563 transparent;
-        }
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 8px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background-color: #4b5563; border-radius: 8px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background-color: #6b7280; }
-        
-        .custom-color-input {
-            -webkit-appearance: none;
-            padding: 0;
-            border: none;
-            border-radius: 6px;
-            width: 32px;
-            height: 32px;
-            overflow: hidden;
-            cursor: pointer;
-            background: none;
-        }
-        .custom-color-input::-webkit-color-swatch { border: 1px solid #4b5563; border-radius: 6px; }
-        .custom-color-input::-webkit-color-swatch-wrapper { padding: 0; }
-        
-        .modern-checkbox {
-            appearance: none;
-            width: 1.25rem;
-            height: 1.25rem;
-            border-radius: 0.25rem;
-            background-color: #374151;
-            border: 1px solid #4b5563;
-            cursor: pointer;
-            display: grid;
-            place-content: center;
-            transition: all 0.2s;
-        }
-        .modern-checkbox::before {
-            content: "";
-            width: 0.65em;
-            height: 0.65em;
-            transform: scale(0);
-            transition: 120ms transform ease-in-out;
-            box-shadow: inset 1em 1em #818cf8;
-            transform-origin: center;
-            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-        }
-        .modern-checkbox:checked { border-color: #818cf8; }
-        .modern-checkbox:checked::before { transform: scale(1); }
-        
-        .editor-panel input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-            margin: 8px 0;
-        }
-        .editor-panel input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 16px;
-            width: 16px;
-            border-radius: 50%;
-            background: #818cf8;
-            cursor: pointer;
-            margin-top: -6px;
-            box-shadow: 0 0 10px rgba(129, 140, 248, 0.4);
-        }
-        .editor-panel input[type="range"]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: #4b5563;
-            border-radius: 2px;
-        }
-        
-        .editor-panel input[type="number"], 
-        .editor-panel input[type="text"], 
-        .editor-panel select {
-            background: #111827;
-            border: 1px solid #4b5563;
-            color: #e2e8f0;
-            border-radius: 0.375rem;
-            padding: 0.35rem 0.5rem;
-            outline: none;
-            transition: border-color 0.2s;
-            font-size: 0.75rem;
-            width: 100%;
-            margin-top: 4px;
-        }
-        .editor-panel input[type="number"]:focus, 
-        .editor-panel input[type="text"]:focus, 
-        .editor-panel select:focus {
-            border-color: #818cf8;
-        }
-        .editor-panel label {
-            color: #cbd5e1;
-            font-weight: 600;
-        }
+        input[type="color"] { padding: 0; border: none; border-radius: 4px; overflow: hidden; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col selection:bg-indigo-500 selection:text-white">
@@ -137,7 +34,6 @@
         </div>
     </div>
 
-    <!-- Login Screen -->
     <div id="screen-login" class="flex-1 flex items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black">
         <div class="glass-panel p-8 rounded-2xl shadow-2xl w-96 text-center">
             <h1 class="text-4xl font-extrabold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">Ltp's Maze Game</h1>
@@ -151,7 +47,6 @@
         </div>
     </div>
 
-    <!-- Main Menu -->
     <div id="screen-menu" class="hidden flex-1 flex flex-col">
         <header class="glass-panel px-6 py-4 flex justify-between items-center z-10">
             <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">Ltp's Maze Game</h1>
@@ -170,6 +65,7 @@
             </div>
 
             <div class="flex-1 glass-panel rounded-2xl p-6 flex flex-col scrollable">
+                
                 <div id="tab-play" class="hidden flex-1 flex flex-col">
                     <div class="flex gap-3 mb-6">
                         <input type="text" id="search-level-input" placeholder="Search Level Name or ID..." class="flex-1 bg-slate-900/50 border border-slate-700 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
@@ -209,15 +105,16 @@
                         <div class="flex flex-col gap-4 mb-6">
                             <div class="flex justify-between items-center bg-slate-900/50 p-3 rounded-lg border border-slate-700">
                                 <span class="text-slate-400">Player Color</span>
-                                <input type="color" id="prof-color" class="custom-color-input w-10 h-10" onchange="saveProfileSettings()">
+                                <input type="color" id="prof-color" class="w-10 h-10 cursor-pointer" onchange="saveProfileSettings()">
                             </div>
                             <div class="flex justify-between items-center bg-slate-900/50 p-3 rounded-lg border border-slate-700">
                                 <span class="text-slate-400">Enable Glow Effect</span>
-                                <input type="checkbox" id="prof-glow" class="modern-checkbox" onchange="saveProfileSettings()">
+                                <input type="checkbox" id="prof-glow" class="w-5 h-5 cursor-pointer accent-indigo-500" onchange="saveProfileSettings()">
                             </div>
                         </div>
 
                         <div class="h-px w-full bg-slate-700 my-6"></div>
+                        
                         <button onclick="deleteAccount()" class="w-full border border-rose-600 text-rose-500 hover:bg-rose-600 hover:text-white p-3 rounded-lg font-bold transition">Delete Account</button>
                     </div>
                 </div>
@@ -225,24 +122,23 @@
         </div>
     </div>
 
-    <!-- Level Settings Modal -->
     <div id="modal-level-settings" class="fixed inset-0 z-50 modal hidden flex items-center justify-center">
         <div class="glass-panel p-6 rounded-xl shadow-2xl w-80">
             <h3 class="text-xl font-bold mb-4">Level Settings</h3>
-            <div class="flex flex-col gap-3 text-sm editor-panel p-4 mb-6 border-none bg-slate-900/50">
-                <label>Grid Width <input type="number" id="cfg-width"></label>
-                <label>Grid Height <input type="number" id="cfg-height"></label>
-                <label>Default Zoom <input type="number" step="0.1" id="cfg-zoom"></label>
-                <label>Max Hearts (1-10) <input type="number" min="1" max="10" id="cfg-health"></label>
+            <div class="flex flex-col gap-3 text-sm">
+                <label>Grid Width <input type="number" id="cfg-width" class="w-full bg-slate-900 p-2 rounded border border-slate-700 mt-1"></label>
+                <label>Grid Height <input type="number" id="cfg-height" class="w-full bg-slate-900 p-2 rounded border border-slate-700 mt-1"></label>
+                <label>Default Zoom <input type="number" step="0.1" id="cfg-zoom" class="w-full bg-slate-900 p-2 rounded border border-slate-700 mt-1"></label>
+                <label>Grid Step (1, 0.5, 0.25...) <input type="number" id="cfg-grid-step" step="0.125" min="0.125" max="1" class="w-full bg-slate-900 p-2 rounded border border-slate-700 mt-1"></label>
+                <label>Player Max Hearts (1-10) <input type="number" min="1" max="10" id="cfg-health" class="w-full bg-slate-900 p-2 rounded border border-slate-700 mt-1"></label>
             </div>
-            <div class="flex gap-2">
-                <button onclick="applyLevelSettings()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 py-2 rounded font-bold transition">Apply</button>
-                <button onclick="closeLevelSettings()" class="flex-1 bg-slate-700 hover:bg-slate-600 py-2 rounded font-bold transition">Cancel</button>
+            <div class="flex gap-2 mt-6">
+                <button onclick="applyLevelSettings()" class="flex-1 bg-indigo-600 py-2 rounded font-bold">Apply</button>
+                <button onclick="closeLevelSettings()" class="flex-1 bg-slate-700 py-2 rounded font-bold">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Level Editor Screen -->
     <div id="screen-editor" class="hidden flex-1 flex flex-col">
         <header class="glass-panel px-4 py-3 flex justify-between items-center z-20">
             <div class="flex items-center gap-4">
@@ -251,6 +147,7 @@
                 <button onclick="openLevelSettings()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm font-semibold transition">⚙️ Settings</button>
             </div>
             
+            <!-- Dynamically scrollable layers view panel -->
             <div class="flex items-center gap-2 max-w-[200px] sm:max-w-[400px]">
                 <div id="layer-controls" class="flex gap-1 bg-slate-900/50 p-1 rounded-lg border border-slate-700 overflow-x-auto no-scrollbar scroll-smooth">
                     <!-- Populated by renderLayerButtons -->
@@ -263,115 +160,98 @@
                 <button onclick="saveLevel(true)" class="bg-slate-700 hover:bg-slate-600 px-4 py-1.5 rounded-lg font-bold shadow-lg transition">Save Private</button>
             </div>
         </header>
-
-        <!-- Editor Workspace (Sidebar + Canvas) -->
         <div class="flex flex-1 overflow-hidden relative">
-            
-            <!-- Upgraded Sidebar with Fixed Tools and Scrollable Properties -->
-            <div class="w-72 editor-sidebar flex flex-col p-4 gap-4 z-10 h-full shrink-0 border-r border-slate-800">
-                
-                <!-- Fixed Tools Section -->
+            <div class="w-64 glass-panel flex flex-col p-4 gap-4 z-10 border-r border-slate-700/50">
                 <div class="shrink-0">
-                    <h3 class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">🛠️ Tools</h3>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Tools</h3>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="setTool('select')" id="tool-select" class="tool-btn bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/40 rounded-lg p-2.5 text-xs font-bold uppercase tracking-wider col-span-2 transition-all shadow-sm flex items-center justify-center gap-2">👆 Selection / Move</button>
-                        <button onclick="setTool('wall')" id="tool-wall" class="tool-btn border border-transparent bg-slate-800 hover:bg-slate-700 rounded-lg p-2 text-xs font-semibold transition">🧱 Wall</button>
-                        <button onclick="setTool('start')" id="tool-start" class="tool-btn border border-transparent bg-slate-800 hover:bg-slate-700 rounded-lg p-2 text-xs font-semibold transition">🟢 Start</button>
-                        <button onclick="setTool('end')" id="tool-end" class="tool-btn border border-transparent bg-slate-800 hover:bg-slate-700 rounded-lg p-2 text-xs font-semibold transition">🏁 End</button>
-                        <button onclick="setTool('damage')" id="tool-damage" class="tool-btn border border-transparent bg-slate-800 hover:bg-slate-700 rounded-lg p-2 text-xs font-semibold transition text-rose-400">💥 Damage</button>
-                        <button onclick="setTool('trigger')" id="tool-trigger" class="tool-btn border border-transparent bg-slate-800 hover:bg-slate-700 rounded-lg p-2 text-xs font-semibold transition text-fuchsia-400 col-span-2">⚡ Trigger</button>
-                        <button onclick="setTool('erase')" id="tool-erase" class="tool-btn border border-transparent bg-slate-800 hover:bg-slate-700 rounded-lg p-2 text-xs font-semibold transition text-rose-400 col-span-2 mt-1">🗑️ Erase Tool</button>
+                        <button onclick="setTool('select')" id="tool-select" class="tool-btn bg-indigo-600 border border-indigo-400 rounded-lg p-2 text-sm font-semibold col-span-2 shadow-lg transition">Selection / Move</button>
+                        <button onclick="setTool('wall')" id="tool-wall" class="tool-btn bg-slate-800 rounded-lg p-2 text-sm font-semibold transition">🧱 Wall</button>
+                        <button onclick="setTool('start')" id="tool-start" class="tool-btn bg-slate-800 rounded-lg p-2 text-sm font-semibold transition">🟢 Start</button>
+                        <button onclick="setTool('end')" id="tool-end" class="tool-btn bg-slate-800 rounded-lg p-2 text-sm font-semibold transition">🏁 End</button>
+                        <button onclick="setTool('damage')" id="tool-damage" class="tool-btn bg-slate-800 rounded-lg p-2 text-sm font-semibold transition text-rose-400">💥 Damage</button>
+                        <button onclick="setTool('trigger')" id="tool-trigger" class="tool-btn bg-slate-800 rounded-lg p-2 text-sm font-semibold transition text-fuchsia-400">⚡ Trigger</button>
+                        <button onclick="setTool('erase')" id="tool-erase" class="tool-btn bg-rose-900/50 rounded-lg p-2 text-sm font-semibold transition">🗑️ Erase</button>
                     </div>
                 </div>
-
-                <!-- Scrollable Properties Section -->
-                <div class="flex-1 overflow-y-auto custom-scroll min-h-0 pr-1 -mr-1">
-                    <div id="properties-panel" class="editor-panel p-4 flex flex-col gap-4">
-                        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">⚙️ Properties</h3>
+                <div id="properties-panel" class="bg-slate-900/50 p-3 rounded-xl border border-slate-700 flex-1 flex flex-col min-h-0">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 shrink-0">Properties</h3>
+                    <div class="flex flex-col gap-3 text-sm flex-1 overflow-y-auto pr-2 pb-2">
+                        <label class="flex justify-between items-center shrink-0">Color: <input type="color" id="prop-color" value="#ffffff" class="w-8 h-8" onchange="updateProp()"></label>
+                        <label class="flex justify-between items-center shrink-0">Solid: <input type="checkbox" id="prop-solid" checked class="w-4 h-4 accent-indigo-500" onchange="updateProp()"></label>
+                        <label class="flex justify-between items-center shrink-0">Pushblock: <input type="checkbox" id="prop-pushblock" class="w-4 h-4 accent-indigo-500" onchange="updateProp()"></label>
                         
-                        <div class="flex flex-col gap-3 text-sm">
-                            <label class="flex justify-between items-center text-xs">Color: 
-                                <input type="color" id="prop-color" value="#ffffff" class="custom-color-input" onchange="updateProp()">
-                            </label>
-                            <label class="flex justify-between items-center text-xs">Solid Block: 
-                                <input type="checkbox" id="prop-solid" checked class="modern-checkbox" onchange="updateProp()">
-                            </label>
-                            
-                            <div class="flex flex-col gap-1 border-t border-slate-700/50 pt-3 mt-1 text-xs">
-                                <div class="flex justify-between items-center">
-                                    <label>Alpha (Opacity):</label>
-                                    <input type="number" id="prop-alpha-num" min="0" max="1" step="0.1" value="1" class="w-16 text-center" oninput="syncAlphaInputs(this.value)">
-                                </div>
-                                <input type="range" id="prop-alpha" min="0" max="1" step="0.05" value="1" oninput="syncAlphaInputs(this.value)">
+                        <!-- Transparency control with slider and manual direct value entry -->
+                        <div class="flex flex-col gap-1">
+                            <div class="flex justify-between items-center">
+                                <span>Alpha (0-1):</span>
+                                <input type="number" id="prop-alpha-num" min="0" max="1" step="0.1" value="1" class="w-16 bg-slate-800 text-center rounded text-xs border border-slate-600 outline-none" oninput="syncAlphaInputs(this.value)">
                             </div>
-
-                            <div class="flex flex-col gap-1 border-t border-slate-700/50 pt-3 mt-1 text-xs">
-                                <div class="flex justify-between items-center">
-                                    <label>Glow Size:</label>
-                                    <input type="number" id="prop-glow-num" min="0" max="50" step="1" value="0" class="w-16 text-center" oninput="syncGlowInputs(this.value)">
-                                </div>
-                                <input type="range" id="prop-glow" min="0" max="50" step="1" value="0" oninput="syncGlowInputs(this.value)">
-                            </div>
-
-                            <div class="flex flex-col gap-1 text-xs border-t border-slate-700/50 pt-3 mt-1">
-                                <label>Block Tag (ID):</label>
-                                <input type="text" id="prop-tag" placeholder="e.g. door1" onchange="updateProp()">
-                            </div>
-                            
-                            <div id="prop-trigger-box" class="hidden flex-col gap-3 mt-2 pt-3 border-t border-slate-700">
-                                <span class="text-[10px] font-bold text-fuchsia-400 uppercase tracking-wide">Trigger Logic</span>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-[10px]">Fired By (Tag or empty for Player):</label>
-                                    <input type="text" id="prop-trig-listen" onchange="updateProp()">
-                                </div>
-                                <div class="flex flex-col gap-1">
-                                    <label class="text-[10px]">Action:</label>
-                                    <select id="prop-action" onchange="updateProp()">
-                                        <option value="WIN">Win Level</option>
-                                        <option value="DIE">Kill Player</option>
-                                        <option value="CAMERA">Move Camera</option>
-                                        <option value="MOVE_TAG">Move Tagged Block</option>
-                                        <option value="ROTATE_TAG">Rotate Tagged Block</option>
-                                        <option value="SET_PROPERTY">Change Block Property</option>
-                                    </select>
-                                </div>
-                                <div id="prop-trig-params" class="flex flex-col gap-2 text-xs"></div>
-                            </div>
-
-                            <div class="mt-2 pt-3 border-t border-slate-700/50">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wide">Saved Colors</span>
-                                    <button onclick="saveCurrentColorToPalette()" class="text-[10px] bg-indigo-600/50 hover:bg-indigo-500 text-white font-bold px-2 py-1 rounded transition">+ Bookmark</button>
-                                </div>
-                                <div id="saved-colors-grid" class="flex flex-wrap gap-1.5 my-2 max-h-[72px] overflow-y-auto custom-scroll p-2 bg-slate-950/40 rounded border border-slate-800">
-                                    <!-- Colors injected here -->
-                                </div>
-                                <div class="flex flex-col gap-1 mt-3">
-                                    <span class="text-[9px] text-slate-500 uppercase">Share/Import Code:</span>
-                                    <div class="flex gap-1.5">
-                                        <input type="text" id="palette-share-code" placeholder="Hex code..." class="!text-[10px] !py-1">
-                                        <button onclick="importPaletteCode()" class="bg-indigo-600 hover:bg-indigo-500 text-[10px] px-2 py-1 rounded font-bold transition">Load</button>
-                                    </div>
-                                </div>
-                            </div>
-
+                            <input type="range" id="prop-alpha" min="0" max="1" step="0.05" value="1" class="w-full accent-indigo-500" oninput="syncAlphaInputs(this.value)">
                         </div>
+
+                        <!-- Glow intensity property slider and manual direct value entry -->
+                        <div class="flex flex-col gap-1 border-t border-slate-800 pt-2">
+                            <div class="flex justify-between items-center">
+                                <span>Glow Size (0-50):</span>
+                                <input type="number" id="prop-glow-num" min="0" max="50" step="1" value="0" class="w-16 bg-slate-800 text-center rounded text-xs border border-slate-600 outline-none" oninput="syncGlowInputs(this.value)">
+                            </div>
+                            <input type="range" id="prop-glow" min="0" max="50" step="1" value="0" class="w-full accent-indigo-500" oninput="syncGlowInputs(this.value)">
+                        </div>
+
+                        <label class="flex flex-col gap-1">Block Tag: <input type="text" id="prop-tag" placeholder="e.g. door1" class="bg-slate-800 p-1.5 rounded border border-slate-600 outline-none w-full" onchange="updateProp()"></label>
+                        
+                        <div id="prop-trigger-box" class="hidden flex-col gap-2 mt-2 pt-2 border-t border-slate-700">
+                            <span class="text-xs text-fuchsia-400 font-bold">Trigger Logic</span>
+                            <label class="text-xs text-slate-400 flex flex-col gap-1">Fired By (Tag or empty for Player):
+                                <input type="text" id="prop-trig-listen" class="bg-slate-800 p-1.5 rounded border border-slate-600" onchange="updateProp()">
+                            </label>
+                            <label class="text-xs text-slate-400 flex flex-col gap-1">Action:
+                                <select id="prop-action" class="bg-slate-800 p-1.5 rounded border border-slate-600 w-full" onchange="updateProp()">
+                                    <option value="WIN">Win Level</option>
+                                    <option value="DIE">Kill Player</option>
+                                    <option value="CAMERA">Move Camera</option>
+                                    <option value="MOVE_TAG">Move Tagged Block</option>
+                                    <option value="ROTATE_TAG">Rotate Tagged Block</option>
+                                    <option value="SET_PROPERTY">Change Tagged Block Property</option>
+                                </select>
+                            </label>
+                            <label class="text-xs text-slate-400 flex flex-col gap-1">Particle Facing (deg):
+                                <input type="number" id="prop-particle-face" value="0" class="bg-slate-800 p-1.5 rounded border border-slate-600" onchange="updateProp()">
+                            </label>
+                            <div id="prop-trig-params" class="flex flex-col gap-2 text-xs"></div>
+                        </div>
+
+                        <!-- Saved custom colors palette feature with export/import functionality -->
+                        <div class="mt-4 pt-3 border-t border-slate-700">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold text-indigo-400 uppercase tracking-wide">Saved Colors</span>
+                                <button onclick="saveCurrentColorToPalette()" class="text-xs bg-indigo-600/50 hover:bg-indigo-600 text-white font-bold px-1.5 py-0.5 rounded transition">+ Bookmark</button>
+                            </div>
+                            <div id="saved-colors-grid" class="flex flex-wrap gap-1.5 my-2 max-h-[72px] overflow-y-auto p-1 bg-slate-950/40 rounded border border-slate-800">
+                                <!-- Colors injected here -->
+                            </div>
+                            <div class="flex flex-col gap-1 mt-2">
+                                <span class="text-[10px] text-slate-500">Share Color Palette Code:</span>
+                                <div class="flex gap-1.5">
+                                    <input type="text" id="palette-share-code" placeholder="Hex palette code" class="bg-slate-900 border border-slate-700 rounded p-1 text-[10px] flex-1 outline-none">
+                                    <button onclick="importPaletteCode()" class="bg-indigo-600 hover:bg-indigo-500 text-[10px] px-2 py-1 rounded font-bold transition">Import</button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
-
-            <!-- Canvas Area -->
             <div id="canvas-container" oncontextmenu="return false;">
                 <canvas id="editor-canvas"></canvas>
             </div>
-            
             <div class="absolute bottom-4 right-4 bg-slate-900/80 px-4 py-2 rounded-lg text-xs text-slate-400 pointer-events-none backdrop-blur border border-slate-700 z-10">
                 WASD: Pan Camera | Scroll: Zoom | Right-Click: Erase
             </div>
         </div>
     </div>
 
-    <!-- Play Screen -->
     <div id="screen-play" class="hidden flex-1 flex flex-col bg-black relative">
         <div class="absolute top-4 left-4 z-20 flex gap-2" id="health-bar"></div>
         <header class="absolute top-0 w-full bg-gradient-to-b from-black/80 to-transparent p-4 flex justify-between items-center z-10 opacity-0 hover:opacity-100 transition-opacity duration-300">
@@ -401,7 +281,7 @@
         // Settings & Constants
         const TILE = 32; 
         const DIFF_BRICKS = { "Easy": 1, "Medium": 2, "Hard": 3, "Difficult": 4, "Insane": 5, "Really Hard": 6, "The Hardest": 7 };
-        const RATING_CP = { "Rated": 1, "Good": 2, "Really Good": 3, "Insanely Good": 4, "Daily": 5, "Weekly": 6 };
+        const RATING_CP = { "Rated": 1, "Good": 2, "Really Good": 3, "Insanely Good": 4 };
 
         // Color Palettes
         let localColors = ["#ffffff", "#00ffff", "#ff0044", "#ffaa00", "#00ffaa", "#aa00ff", "#38bdf8", "#ec4899", "#eab308"];
@@ -414,7 +294,7 @@
         let e_cam = { x: 0, y: 0, zoom: 1 };
         let e_meta = { width: 40, height: 40, zoom: 1, maxHealth: 3, layerCount: 3 };
         let e_keys = {};
-        window.e_verified = false; 
+        window.e_verified = false; // Must be true to publish
         
         // Editor Interaction
         let isDrawing = false, isErasing = false, isSelecting = false, isDragging = false;
@@ -422,7 +302,7 @@
         let dragOffsetX = 0, dragOffsetY = 0;
 
         // Game State
-        let g_blocks = [], g_players = [], g_tweens = [];
+        let g_blocks = [], g_players = [], g_tweens = [], g_particles = [];
         let g_cam = { x: 0, y: 0, zoom: 1, targetX: null, targetY: null, active: false };
         let g_keys = {}, g_loop = null, isPlaying = false, g_meta = null;
 
@@ -432,6 +312,49 @@
         const plCtx = plCanvas.getContext('2d');
 
         function generateId() { return 'b_' + Date.now() + '_' + Math.floor(Math.random()*10000); }
+
+        function getGridStep(meta) {
+            const step = parseFloat(meta?.gridStep ?? 1);
+            if (Number.isNaN(step) || step <= 0) return 1;
+            return Math.max(0.125, Math.min(step, 1));
+        }
+
+        function snapToGridUnits(value, meta) {
+            const step = getGridStep(meta);
+            return Math.round(value / step) * step;
+        }
+
+        function getBlockSize(block) {
+            const size = parseFloat(block?.size ?? 1);
+            return Number.isFinite(size) && size > 0 ? size : 1;
+        }
+
+        function blockPx(block) { return block.x * TILE; }
+        function blockPy(block) { return block.y * TILE; }
+        function blockDim(block) { return TILE * getBlockSize(block); }
+
+        function getDateKey(d = new Date()) {
+            const yy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yy}-${mm}-${dd}`;
+        }
+
+        function getWeekKey(d = new Date()) {
+            const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            const dayNum = date.getUTCDay() || 7;
+            date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+            const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+            return `${date.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;
+        }
+
+        function levelScheduleMatches(level, filterType) {
+            if (!level || !level.category || level.category !== filterType) return false;
+            if (filterType === 'daily') return level.scheduleDate === getDateKey();
+            if (filterType === 'weekly') return level.scheduleDate && getWeekKey(new Date(level.scheduleDate)) === getWeekKey();
+            return true;
+        }
 
         window.showMsg = (title, text) => {
             document.getElementById('msg-title').innerText = title;
@@ -452,11 +375,15 @@
             }
         };
 
-        // Palette Management
+        // Load custom local saved colors
         function loadPaletteFromStorage() {
             const saved = localStorage.getItem('ltp_maze_custom_palette');
             if (saved) {
-                try { localColors = JSON.parse(saved); } catch(e) { console.error("Failed loading saved colors:", e); }
+                try {
+                    localColors = JSON.parse(saved);
+                } catch(e) {
+                    console.error("Failed loading saved colors:", e);
+                }
             }
             renderSavedColorsUI();
         }
@@ -465,7 +392,7 @@
             const currentC = document.getElementById('prop-color').value;
             if(!localColors.includes(currentC)) {
                 localColors.unshift(currentC);
-                if(localColors.length > 24) localColors.pop();
+                if(localColors.length > 24) localColors.pop(); // Keep palette at a sensible limit
                 localStorage.setItem('ltp_maze_custom_palette', JSON.stringify(localColors));
                 renderSavedColorsUI();
             }
@@ -487,17 +414,24 @@
             const code = document.getElementById('palette-share-code').value.trim();
             if(!code) return showMsg("Error", "Please input a valid palette share code first.");
             try {
+                // Expects format like: #ff0044,#aa00ff,#ffffff or raw JSON
                 let imported = [];
-                if (code.startsWith('[')) imported = JSON.parse(code);
-                else imported = code.split(',').map(c => c.trim()).filter(c => c.startsWith('#'));
-                
+                if (code.startsWith('[')) {
+                    imported = JSON.parse(code);
+                } else {
+                    imported = code.split(',').map(c => c.trim()).filter(c => c.startsWith('#'));
+                }
                 if (imported.length > 0) {
                     localColors = [...new Set([...imported, ...localColors])].slice(0, 24);
                     localStorage.setItem('ltp_maze_custom_palette', JSON.stringify(localColors));
                     renderSavedColorsUI();
                     showMsg("Success", "Colors successfully imported and merged into your palette!");
-                } else { showMsg("Invalid Format", "Colors must be comma-separated hex codes."); }
-            } catch(e) { showMsg("Parsing Error", "Invalid palette code formatting."); }
+                } else {
+                    showMsg("Invalid Format", "Colors must be comma-separated hex codes (e.g., #ffffff,#000000).");
+                }
+            } catch(e) {
+                showMsg("Parsing Error", "Invalid palette code formatting.");
+            }
         };
 
         function renderSavedColorsUI() {
@@ -506,10 +440,11 @@
             cGrid.innerHTML = '';
             localColors.forEach(color => {
                 cGrid.innerHTML += `
-                    <div onclick="useColorFromPalette('${color}')" class="relative group w-6 h-6 rounded cursor-pointer border border-slate-700/60 transition-transform transform hover:scale-110 active:scale-95 shadow-sm" style="background-color: ${color};" title="Click to apply">
-                        <button onclick="removeColorFromPalette(event, '${color}')" class="absolute -top-1.5 -right-1.5 hidden group-hover:flex items-center justify-center bg-rose-600 text-white rounded-full w-4 h-4 text-[10px] font-black leading-none hover:bg-rose-500 shadow-md border border-rose-800">×</button>
+                    <div onclick="useColorFromPalette('${color}')" class="relative group w-6 h-6 rounded cursor-pointer border border-slate-700/60 transition-transform transform hover:scale-110 active:scale-95" style="background-color: ${color};" title="Click to apply">
+                        <button onclick="removeColorFromPalette(event, '${color}')" class="absolute -top-1 -right-1 hidden group-hover:flex items-center justify-center bg-rose-600 text-white rounded-full w-3.5 h-3.5 text-[8px] font-black leading-none hover:bg-rose-500 shadow" title="Delete">×</button>
                     </div>`;
             });
+            // Update copy code input
             document.getElementById('palette-share-code').value = localColors.join(',');
         }
 
@@ -546,7 +481,7 @@
                     if(document.getElementById('screen-login').classList.contains('hidden') === false){
                         showScreen('menu');
                         showSubMenu('play');
-                        window.curFlt = 'all';
+                        window.curFlt = 'all'; // Default to Recent so they see levels immediately
                     }
                     if(u.username === 'LtpMer') document.getElementById('admin-btn').classList.remove('hidden');
                 } else { localStorage.removeItem('ltp_maze_uid'); showScreen('login'); }
@@ -629,7 +564,8 @@
                 l = l.filter(x => x.authorId === window.currentUser.id);
             } else {
                 l = l.filter(x => !x.private || x.authorId === window.currentUser.id);
-                if(t !== 'all') l = l.filter(x => x.category === t);
+                if(t === 'daily' || t === 'weekly') l = l.filter(x => levelScheduleMatches(x, t));
+                else if(t !== 'all') l = l.filter(x => x.category === t);
             }
             renderLevelList(l.sort((a,b) => b.timestamp - a.timestamp));
         };
@@ -653,11 +589,12 @@
             list.forEach(l => {
                 const b = (window.currentUser.beaten||[]).includes(l.id) ? '<span class="text-emerald-400 text-xs font-bold bg-emerald-900/30 px-2 py-1 rounded ml-2">✓ BEATEN</span>' : '';
                 const priv = l.private ? '<span class="text-amber-400 text-xs font-bold bg-amber-900/30 px-2 py-1 rounded ml-2">🔒 PRIVATE</span>' : '';
+                const sched = l.category === 'daily' || l.category === 'weekly' ? `<span class="text-cyan-400 text-xs font-bold bg-cyan-900/30 px-2 py-1 rounded ml-2">${l.category.toUpperCase()} ${l.scheduleDate || ''}</span>` : '';
                 c.innerHTML += `
                     <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex justify-between items-center hover:border-indigo-500 transition">
                         <div>
-                            <h4 class="font-bold text-lg">${l.name} <span class="text-slate-500 text-sm">#${l.numericId}</span> ${priv} ${b}</h4>
-                            <p class="text-sm text-slate-400">By ${l.authorName} | Diff: <span class="text-amber-400">${l.difficulty||'Unrated'}</span> | Qual: <span class="text-fuchsia-400">${l.rating||'Unrated'}</span></p>
+                            <h4 class="font-bold text-lg">${l.name} <span class="text-slate-500 text-sm">#${l.numericId}</span> ${priv} ${b} ${sched}</h4>
+                            <p class="text-sm text-slate-400">By ${l.authorName} | Diff: <span class="text-amber-400">${l.difficulty||'Unrated'}</span> | Qual: <span class="text-fuchsia-400">${(l.rating && l.rating !== 'Daily' && l.rating !== 'Weekly') ? l.rating : 'Unrated'}</span></p>
                         </div>
                         <div class="flex gap-2">
                             ${l.authorId === window.currentUser.id || window.currentUser.username === 'LtpMer' ? `<button onclick="editLevel('${l.id}')" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm font-semibold transition">Edit</button>` : ''}
@@ -695,6 +632,7 @@
                                 <select id="adm-df-${l.id}" class="bg-slate-900 border border-slate-600 rounded p-1"><option value="">Diff</option>${Object.keys(DIFF_BRICKS).map(k=>`<option value="${k}" ${l.difficulty===k?'selected':''}>${k}</option>`).join('')}</select>
                                 <select id="adm-rt-${l.id}" class="bg-slate-900 border border-slate-600 rounded p-1"><option value="">Rate</option>${Object.keys(RATING_CP).map(k=>`<option value="${k}" ${l.rating===k?'selected':''}>${k}</option>`).join('')}</select>
                                 <select id="adm-ct-${l.id}" class="bg-slate-900 border border-slate-600 rounded p-1"><option value="user" ${l.category==='user'?'selected':''}>User</option><option value="official" ${l.category==='official'?'selected':''}>Off</option><option value="daily" ${l.category==='daily'?'selected':''}>Daily</option><option value="weekly" ${l.category==='weekly'?'selected':''}>Week</option></select>
+                                <input type="date" id="adm-date-${l.id}" value="${l.scheduleDate || ''}" class="bg-slate-900 border border-slate-600 rounded p-1 text-xs">
                                 <button onclick="adminSaveLvl('${l.id}')" class="bg-indigo-600 px-2 rounded">Save</button>
                                 <button onclick="adminDelLvl('${l.id}')" class="bg-rose-600 px-2 rounded">Del</button>
                             </div>
@@ -703,9 +641,9 @@
             });
         };
         window.adminSaveLvl = async (id) => {
-            const df = document.getElementById(`adm-df-${id}`).value, rt = document.getElementById(`adm-rt-${id}`).value, ct = document.getElementById(`adm-ct-${id}`).value;
+            const df = document.getElementById(`adm-df-${id}`).value, rt = document.getElementById(`adm-rt-${id}`).value, ct = document.getElementById(`adm-ct-${id}`).value, sd = document.getElementById(`adm-date-${id}`).value;
             const l = window.g_levels.find(x => x.id === id);
-            await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'levels', id), { difficulty: df||null, rating: rt||null, category: ct });
+            await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'levels', id), { difficulty: df||null, rating: rt||null, category: ct, scheduleDate: (ct === 'daily' || ct === 'weekly') ? (sd || null) : null });
             if(rt && rt !== l.rating && RATING_CP[rt]) await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'users', l.authorId), { cp: (window.g_users.find(u=>u.id===l.authorId)?.cp||0) + RATING_CP[rt] });
         };
         window.adminDelLvl = async (id) => { if(confirm("Delete level?")) await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'levels', id)); };
@@ -724,16 +662,17 @@
                 const isActive = (i === e_layer);
                 const classes = isActive 
                     ? "px-3.5 py-1 rounded-md text-sm font-bold bg-indigo-600 border border-indigo-400 text-white min-w-[36px] flex-shrink-0 cursor-pointer shadow-md" 
-                    : "px-3.5 py-1 rounded-md text-sm font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700/80 min-w-[36px] flex-shrink-0 cursor-pointer transition border border-transparent";
+                    : "px-3.5 py-1 rounded-md text-sm font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700/80 min-w-[36px] flex-shrink-0 cursor-pointer transition";
                 html += `<button onclick="setLayer(${i})" id="btn-layer-${i}" class="${classes}">L${i+1}</button>`;
             }
-            html += `<button onclick="addLayer()" class="px-3.5 py-1 rounded-md text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition min-w-[36px] flex-shrink-0 cursor-pointer border border-transparent" title="Add Layer">+</button>`;
+            html += `<button onclick="addLayer()" class="px-3.5 py-1 rounded-md text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition min-w-[36px] flex-shrink-0 cursor-pointer" title="Add Layer">+</button>`;
             container.innerHTML = html;
         };
 
         window.addLayer = () => {
             e_meta.layerCount = (e_meta.layerCount || 3) + 1;
             setLayer(e_meta.layerCount - 1);
+            // Scroll to the end of layers list
             setTimeout(() => {
                 const container = document.getElementById('layer-controls');
                 container.scrollLeft = container.scrollWidth;
@@ -753,7 +692,7 @@
             window.e_verified = false;
             e_blocks = []; 
             e_cam = {x:0, y:0, zoom:1}; 
-            e_meta = { width: 40, height: 40, zoom: 1, maxHealth: 3, layerCount: 3 }; 
+            e_meta = { width: 40, height: 40, zoom: 1, maxHealth: 3, layerCount: 3, gridStep: 1 }; 
             setLayer(0); 
             setTool('select'); 
             renderSavedColorsUI();
@@ -763,7 +702,7 @@
         
         window.openLevelSettings = () => {
             document.getElementById('cfg-width').value = e_meta.width; document.getElementById('cfg-height').value = e_meta.height;
-            document.getElementById('cfg-zoom').value = e_meta.zoom; document.getElementById('cfg-health').value = e_meta.maxHealth;
+            document.getElementById('cfg-zoom').value = e_meta.zoom; document.getElementById('cfg-grid-step').value = e_meta.gridStep || 1; document.getElementById('cfg-health').value = e_meta.maxHealth;
             document.getElementById('modal-level-settings').classList.remove('hidden');
         };
         window.closeLevelSettings = () => document.getElementById('modal-level-settings').classList.add('hidden');
@@ -771,68 +710,59 @@
             e_meta.width = parseInt(document.getElementById('cfg-width').value) || 40;
             e_meta.height = parseInt(document.getElementById('cfg-height').value) || 40;
             e_meta.zoom = parseFloat(document.getElementById('cfg-zoom').value) || 1;
+            e_meta.gridStep = getGridStep({ gridStep: parseFloat(document.getElementById('cfg-grid-step').value) || 1 });
             e_meta.maxHealth = parseInt(document.getElementById('cfg-health').value) || 3;
             closeLevelSettings(); 
             window.e_verified = false;
             drawEditor();
         };
 
-        // Upgraded setTool to match the new beautiful button styles
         window.setTool = (t) => {
             e_tool = t; e_selectedIds.clear();
-            
-            document.querySelectorAll('.tool-btn').forEach(b => { 
-                b.classList.remove('bg-indigo-500/20', 'text-indigo-300', 'border-indigo-500/30', 'bg-rose-900/40', 'border-rose-500/30', 'text-rose-300', 'text-rose-400');
-                b.classList.remove('bg-slate-700', 'border-slate-500'); // active state
-                b.classList.add('bg-slate-800', 'border-transparent'); // resting state
-            });
-            
+            document.querySelectorAll('.tool-btn').forEach(b => { b.classList.remove('bg-indigo-600', 'border', 'border-indigo-400', 'bg-rose-900/50', 'border-rose-400'); b.classList.add('bg-slate-800'); });
             const btn = document.getElementById('tool-' + t);
-            btn.classList.remove('bg-slate-800', 'border-transparent');
-            
-            if(t === 'erase') { 
-                btn.classList.add('bg-rose-900/40', 'border-rose-500/30', 'text-rose-300'); 
-            } else if(t === 'select') { 
-                btn.classList.add('bg-indigo-500/20', 'border-indigo-500/30', 'text-indigo-300'); 
-            } else { 
-                btn.classList.add('bg-slate-700', 'border-slate-500'); 
-            }
-            
-            // Retain original specialized tool colors
-            if(t === 'damage') btn.classList.add('text-rose-400');
-            if(t === 'trigger') btn.classList.add('text-fuchsia-400');
+            if(t === 'erase') { btn.classList.remove('bg-slate-800'); btn.classList.add('bg-rose-900/50', 'border', 'border-rose-400'); }
+            else if(t === 'select') { btn.classList.remove('bg-slate-800'); btn.classList.add('bg-indigo-600', 'border', 'border-indigo-400'); }
+            else { btn.classList.remove('bg-slate-800'); btn.classList.add('bg-slate-600', 'border', 'border-slate-400'); }
             
             document.getElementById('prop-trigger-box').classList.add('hidden');
             if(t === 'wall') { setProps('#ffffff', true, 1, 0); }
             else if(t === 'start') { setProps('#00ffaa', false, 1, 10); }
             else if(t === 'end') { setProps('#ffaa00', false, 1, 15); }
             else if(t === 'damage') { setProps('#ff0044', true, 0.8, 12); }
-            else if(t === 'trigger') { setProps('#aa00ff', false, 0.5, 8); document.getElementById('prop-trigger-box').classList.remove('hidden'); renderTriggerParams('WIN'); }
+            else if(t === 'trigger') { setProps('#aa00ff', false, 0.5, 8); document.getElementById('prop-trigger-box').classList.remove('hidden'); document.getElementById('prop-particle-face').value = 0; renderTriggerParams('WIN'); }
         };
 
         function setProps(c, s, a, g) { 
             document.getElementById('prop-color').value = c; 
             document.getElementById('prop-solid').checked = s; 
+            document.getElementById('prop-pushblock').checked = false; 
             syncAlphaInputs(a);
             syncGlowInputs(g || 0);
             document.getElementById('prop-tag').value = ''; 
         }
 
+        // Keep Alpha inputs synchronized and update selection properties
         window.syncAlphaInputs = (val) => {
             let floatVal = parseFloat(val);
             if (isNaN(floatVal)) floatVal = 1;
             floatVal = Math.max(0, Math.min(1, floatVal));
+            
             document.getElementById('prop-alpha').value = floatVal;
             document.getElementById('prop-alpha-num').value = floatVal;
+            
             updateProp();
         };
 
+        // Keep Glow inputs synchronized and update selection properties
         window.syncGlowInputs = (val) => {
             let intVal = parseInt(val);
             if (isNaN(intVal)) intVal = 0;
             intVal = Math.max(0, Math.min(50, intVal));
+            
             document.getElementById('prop-glow').value = intVal;
             document.getElementById('prop-glow-num').value = intVal;
+            
             updateProp();
         };
 
@@ -840,30 +770,32 @@
             const p = document.getElementById('prop-trig-params');
             let h = '';
             if(action === 'CAMERA') {
-                h = `<label>Target X: <input type="number" id="tp-x" value="${data.x||0}"></label>
-                     <label>Target Y: <input type="number" id="tp-y" value="${data.y||0}"></label>
-                     <label>Zoom: <input type="number" step="0.1" id="tp-z" value="${data.z||1}"></label>
-                     <label>Duration (s): <input type="number" step="0.1" id="tp-dur" value="${data.dur||1}"></label>`;
+                h = `<label>Target X: <input type="number" id="tp-x" value="${data.x||0}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded"></label>
+                     <label>Target Y: <input type="number" id="tp-y" value="${data.y||0}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded"></label>
+                     <label>Zoom: <input type="number" step="0.1" id="tp-z" value="${data.z||1}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded"></label>
+                     <label>Duration (s): <input type="number" step="0.1" id="tp-dur" value="${data.dur||1}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded"></label>`;
             } else if(action === 'MOVE_TAG') {
-                h = `<label>Target Tag: <input type="text" id="tp-tag" value="${data.tag||''}" placeholder="e.g. door1"></label>
-                     <label>Move X (Tiles): <input type="number" id="tp-mx" value="${data.mx||0}"></label>
-                     <label>Move Y (Tiles): <input type="number" id="tp-my" value="${data.my||0}"></label>
-                     <label>Duration (s): <input type="number" step="0.1" id="tp-dur" value="${data.dur||1}"></label>`;
+                h = `<label>Target Tag: <input type="text" id="tp-tag" value="${data.tag||''}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded" placeholder="e.g. door1"></label>
+                     <label>Move X (Tiles): <input type="number" id="tp-mx" value="${data.mx||0}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded"></label>
+                     <label>Move Y (Tiles): <input type="number" id="tp-my" value="${data.my||0}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded"></label>
+                     <label>Duration (s): <input type="number" step="0.1" id="tp-dur" value="${data.dur||1}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded"></label>`;
             } else if(action === 'ROTATE_TAG') {
-                h = `<label>Target Tag: <input type="text" id="tp-tag" value="${data.tag||''}" placeholder="e.g. door1"></label>
-                     <label>Angle (deg): <input type="number" id="tp-ang" value="${data.ang||90}"></label>
-                     <label>Duration (s): <input type="number" step="0.1" id="tp-dur" value="${data.dur||1}"></label>`;
+                h = `<label>Target Tag: <input type="text" id="tp-tag" value="${data.tag||''}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded" placeholder="e.g. door1"></label>
+                     <label>Center Tag: <input type="text" id="tp-center-tag" value="${data.centerTag||''}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded" placeholder="e.g. pivot"></label>
+                     <label>Angle (deg): <input type="number" id="tp-ang" value="${data.ang||90}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded"></label>
+                     <label>Duration (s): <input type="number" step="0.1" id="tp-dur" value="${data.dur||1}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded"></label>`;
             } else if(action === 'SET_PROPERTY') {
-                h = `<label>Target Tag: <input type="text" id="tp-tag" value="${data.tag||''}" placeholder="e.g. wallA"></label>
+                h = `<label>Target Tag: <input type="text" id="tp-tag" value="${data.tag||''}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded" placeholder="e.g. wallA"></label>
                      <label>Property Name:
-                        <select id="tp-prop">
+                        <select id="tp-prop" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded">
                             <option value="color" ${data.prop==='color'?'selected':''}>Color</option>
                             <option value="solid" ${data.prop==='solid'?'selected':''}>Solid (true/false)</option>
+                            <option value="pushblock" ${data.prop==='pushblock'?'selected':''}>Pushblock (true/false)</option>
                             <option value="alpha" ${data.prop==='alpha'?'selected':''}>Alpha (0-1)</option>
                             <option value="glow" ${data.prop==='glow'?'selected':''}>Glow (0-50)</option>
                         </select>
                      </label>
-                     <label>New Value: <input type="text" id="tp-val" value="${data.val!==undefined?data.val:''}" placeholder="e.g. #ff0000, false, 0.5"></label>`;
+                     <label>New Value: <input type="text" id="tp-val" value="${data.val!==undefined?data.val:''}" class="bg-slate-800 p-1 w-full mt-1 border border-slate-700 rounded" placeholder="e.g. #ff0000, false, 0.5"></label>`;
             }
             p.innerHTML = h;
             Array.from(p.querySelectorAll('input, select')).forEach(i => i.addEventListener('change', updateProp));
@@ -879,16 +811,19 @@
                 if(b) {
                     b.color = document.getElementById('prop-color').value; 
                     b.solid = document.getElementById('prop-solid').checked;
+                    b.pushblock = document.getElementById('prop-pushblock').checked;
                     b.alpha = parseFloat(document.getElementById('prop-alpha').value); 
                     b.glow = parseInt(document.getElementById('prop-glow').value) || 0;
                     b.tag = document.getElementById('prop-tag').value;
+                    b.pushblock = document.getElementById('prop-pushblock').checked;
                     if(b.type === 'trigger') {
                         b.listenTag = document.getElementById('prop-trig-listen').value; 
                         b.action = document.getElementById('prop-action').value;
+                        b.particleFace = parseFloat(document.getElementById('prop-particle-face').value) || 0;
                         b.tData = {};
                         if(b.action === 'CAMERA') { b.tData = { x: +document.getElementById('tp-x').value, y: +document.getElementById('tp-y').value, z: +document.getElementById('tp-z').value, dur: +document.getElementById('tp-dur').value }; }
                         if(b.action === 'MOVE_TAG') { b.tData = { tag: document.getElementById('tp-tag').value, mx: +document.getElementById('tp-mx').value, my: +document.getElementById('tp-my').value, dur: +document.getElementById('tp-dur').value }; }
-                        if(b.action === 'ROTATE_TAG') { b.tData = { tag: document.getElementById('tp-tag').value, ang: +document.getElementById('tp-ang').value, dur: +document.getElementById('tp-dur').value }; }
+                        if(b.action === 'ROTATE_TAG') { b.tData = { tag: document.getElementById('tp-tag').value, centerTag: document.getElementById('tp-center-tag').value, ang: +document.getElementById('tp-ang').value, dur: +document.getElementById('tp-dur').value }; }
                         if(b.action === 'SET_PROPERTY') { b.tData = { tag: document.getElementById('tp-tag').value, prop: document.getElementById('tp-prop').value, val: document.getElementById('tp-val').value }; }
                     }
                 }
@@ -901,7 +836,8 @@
             const rawX = e.clientX - r.left, rawY = e.clientY - r.top;
             const worldX = (rawX - edCanvas.width/2) / e_cam.zoom + e_cam.x;
             const worldY = (rawY - edCanvas.height/2) / e_cam.zoom + e_cam.y;
-            return { wx: worldX, wy: worldY, gx: Math.floor(worldX/TILE), gy: Math.floor(worldY/TILE) };
+            const step = e_meta.gridStep || 1;
+            return { wx: worldX, wy: worldY, gx: snapToGridUnits(worldX / TILE, e_meta), gy: snapToGridUnits(worldY / TILE, e_meta), step };
         }
 
         edCanvas.addEventListener('mousedown', e => {
@@ -933,11 +869,11 @@
                 const dx = pos.gx - dragOffsetX, dy = pos.gy - dragOffsetY;
                 if(dx !== 0 || dy !== 0) {
                     window.e_verified = false;
-                    e_selectedIds.forEach(id => { let b = e_blocks.find(x=>x.id===id); if(b) { b.x += dx; b.y += dy; } });
+                    e_selectedIds.forEach(id => { let b = e_blocks.find(x=>x.id===id); if(b) { b.x = snapToGridUnits(b.x + dx, e_meta); b.y = snapToGridUnits(b.y + dy, e_meta); } });
                     dragOffsetX = pos.gx; dragOffsetY = pos.gy;
                 }
             } else if(isSelecting) {
-                // drawing select box
+                // updates drawn below
             } else if(isDrawing || isErasing) {
                 handleDraw(e);
             }
@@ -950,8 +886,8 @@
                 const yMin = Math.min(startSelectY, currentMouseY), yMax = Math.max(startSelectY, currentMouseY);
                 e_blocks.forEach(b => {
                     if(b.layer === e_layer) {
-                        const bx = b.x*TILE, by = b.y*TILE;
-                        if(bx+TILE > xMin && bx < xMax && by+TILE > yMin && by < yMax) e_selectedIds.add(b.id);
+                        const bx = b.x*TILE, by = b.y*TILE, bw = TILE * getBlockSize(b);
+                        if(bx+bw > xMin && bx < xMax && by+bw > yMin && by < yMax) e_selectedIds.add(b.id);
                     }
                 });
                 
@@ -959,14 +895,18 @@
                     const first = e_blocks.find(x=>x.id===Array.from(e_selectedIds)[0]);
                     document.getElementById('prop-color').value = first.color; 
                     document.getElementById('prop-solid').checked = first.solid;
+                    document.getElementById('prop-pushblock').checked = !!first.pushblock;
                     
+                    // Sync our upgraded dual Inputs for Selection alpha and glow
                     syncAlphaInputs(first.alpha !== undefined ? first.alpha : 1);
                     syncGlowInputs(first.glow !== undefined ? first.glow : 0);
                     
                     document.getElementById('prop-tag').value = first.tag||'';
+                    document.getElementById('prop-pushblock').checked = !!first.pushblock;
                     if(first.type === 'trigger') {
                         document.getElementById('prop-trigger-box').classList.remove('hidden');
                         document.getElementById('prop-action').value = first.action; document.getElementById('prop-trig-listen').value = first.listenTag||'';
+                        document.getElementById('prop-particle-face').value = first.particleFace ?? 0;
                         renderTriggerParams(first.action, first.tData);
                     } else document.getElementById('prop-trigger-box').classList.add('hidden');
                 }
@@ -978,7 +918,7 @@
             const pos = getMousePos(e);
             if(pos.gx < 0 || pos.gx >= e_meta.width || pos.gy < 0 || pos.gy >= e_meta.height) return;
             
-            const existingIdx = e_blocks.findIndex(b => b.x === pos.gx && b.y === pos.gy && b.layer === e_layer);
+            const existingIdx = e_blocks.findIndex(b => b.layer === e_layer && Math.abs(b.x - pos.gx) < 0.0001 && Math.abs(b.y - pos.gy) < 0.0001);
             
             if(isErasing || e_tool === 'erase') {
                 if(existingIdx >= 0) { e_blocks.splice(existingIdx, 1); window.e_verified = false; }
@@ -988,16 +928,17 @@
                 const b = {
                     id: generateId(), x: pos.gx, y: pos.gy, layer: e_layer, type: e_tool,
                     color: document.getElementById('prop-color').value, solid: document.getElementById('prop-solid').checked,
+                    pushblock: document.getElementById('prop-pushblock').checked,
                     alpha: parseFloat(document.getElementById('prop-alpha').value), 
                     glow: parseInt(document.getElementById('prop-glow').value) || 0,
-                    tag: document.getElementById('prop-tag').value, rotation: 0
+                    tag: document.getElementById('prop-tag').value, rotation: 0, size: e_meta.gridStep || 1
                 };
                 if(e_tool === 'trigger') {
                     b.action = document.getElementById('prop-action').value; b.listenTag = document.getElementById('prop-trig-listen').value;
                     b.tData = {};
                     if(b.action==='CAMERA') b.tData = {x:+document.getElementById('tp-x').value,y:+document.getElementById('tp-y').value,z:+document.getElementById('tp-z').value,dur:+document.getElementById('tp-dur').value};
                     if(b.action==='MOVE_TAG') b.tData = {tag:document.getElementById('tp-tag').value,mx:+document.getElementById('tp-mx').value,my:+document.getElementById('tp-my').value,dur:+document.getElementById('tp-dur').value};
-                    if(b.action==='ROTATE_TAG') b.tData = {tag:document.getElementById('tp-tag').value,ang:+document.getElementById('tp-ang').value,dur:+document.getElementById('tp-dur').value};
+                    if(b.action==='ROTATE_TAG') b.tData = {tag:document.getElementById('tp-tag').value,centerTag:document.getElementById('tp-center-tag').value,ang:+document.getElementById('tp-ang').value,dur:+document.getElementById('tp-dur').value};
                     if(b.action==='SET_PROPERTY') b.tData = {tag:document.getElementById('tp-tag').value,prop:document.getElementById('tp-prop').value,val:document.getElementById('tp-val').value};
                 }
                 e_blocks.push(b);
@@ -1018,18 +959,28 @@
             drawEditor();
         }
 
+        // Draw helper to connect triggers with visual lines & arrows
         function drawVisualArrow(ctx, fromX, fromY, toX, toY, color = '#f472b6', width = 2) {
             ctx.save();
-            ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = width;
             ctx.setLineDash([6, 4]);
-            ctx.beginPath(); ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY); ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
 
+            // Arrow head
             const angle = Math.atan2(toY - fromY, toX - fromX);
-            ctx.setLineDash([]); ctx.beginPath();
+            ctx.setLineDash([]);
+            ctx.beginPath();
             ctx.moveTo(toX, toY);
             ctx.lineTo(toX - 10 * Math.cos(angle - Math.PI / 6), toY - 10 * Math.sin(angle - Math.PI / 6));
             ctx.lineTo(toX - 10 * Math.cos(angle + Math.PI / 6), toY - 10 * Math.sin(angle + Math.PI / 6));
-            ctx.closePath(); ctx.fill();
+            ctx.closePath();
+            ctx.fill();
             ctx.restore();
         }
 
@@ -1041,8 +992,10 @@
             edCtx.translate(-e_cam.x, -e_cam.y);
 
             edCtx.strokeStyle = 'rgba(255,255,255,0.05)'; edCtx.lineWidth = 1;
-            for(let x=0; x<=e_meta.width; x++) { edCtx.beginPath(); edCtx.moveTo(x*TILE, 0); edCtx.lineTo(x*TILE, e_meta.height*TILE); edCtx.stroke(); }
-            for(let y=0; y<=e_meta.height; y++) { edCtx.beginPath(); edCtx.moveTo(0, y*TILE); edCtx.lineTo(e_meta.width*TILE, y*TILE); edCtx.stroke(); }
+            const eStep = e_meta.gridStep || 1;
+            const eUnit = TILE * eStep;
+            for(let x=0; x<=e_meta.width / eStep; x++) { edCtx.beginPath(); edCtx.moveTo(x*eUnit, 0); edCtx.lineTo(x*eUnit, e_meta.height*TILE); edCtx.stroke(); }
+            for(let y=0; y<=e_meta.height / eStep; y++) { edCtx.beginPath(); edCtx.moveTo(0, y*eUnit); edCtx.lineTo(e_meta.width*TILE, y*eUnit); edCtx.stroke(); }
             edCtx.strokeStyle = 'rgba(99,102,241,0.5)'; edCtx.lineWidth = 2; edCtx.strokeRect(0, 0, e_meta.width*TILE, e_meta.height*TILE);
 
             const sorted = [...e_blocks].sort((a,b) => a.layer - b.layer);
@@ -1051,16 +1004,18 @@
                 if(!isCurrentLayer) edCtx.globalAlpha = (b.alpha !== undefined ? b.alpha : 1) * 0.3; 
                 else edCtx.globalAlpha = (b.alpha !== undefined ? b.alpha : 1);
                 
+                const bw = TILE * getBlockSize(b);
+                // Draw custom glow around blocks in editor if intensity > 0
                 if(b.glow && b.glow > 0) {
                     edCtx.save();
                     edCtx.shadowBlur = b.glow * e_cam.zoom;
                     edCtx.shadowColor = b.color;
                     edCtx.fillStyle = b.color;
-                    edCtx.fillRect(b.x*TILE, b.y*TILE, TILE, TILE);
+                    edCtx.fillRect(b.x*TILE, b.y*TILE, bw, bw);
                     edCtx.restore();
                 } else {
                     edCtx.fillStyle = b.color;
-                    edCtx.fillRect(b.x*TILE, b.y*TILE, TILE, TILE);
+                    edCtx.fillRect(b.x*TILE, b.y*TILE, bw, bw);
                 }
                 
                 edCtx.fillStyle = '#fff'; edCtx.font = '12px Arial'; edCtx.textAlign = 'center';
@@ -1070,19 +1025,22 @@
                 if(b.type === 'trigger') edCtx.fillText('T', b.x*TILE+TILE/2, b.y*TILE+TILE/1.5);
                 
                 if(e_selectedIds.has(b.id)) { 
-                    edCtx.strokeStyle = '#fff'; edCtx.lineWidth = 2; 
-                    edCtx.strokeRect(b.x*TILE, b.y*TILE, TILE, TILE); 
+                    edCtx.strokeStyle = '#fff'; 
+                    edCtx.lineWidth = 2; 
+                    edCtx.strokeRect(b.x*TILE, b.y*TILE, bw, bw); 
                 }
             });
             edCtx.globalAlpha = 1;
 
+            // DRAW TRIGGER CONNECTOR ARROWS & LOGIC VISUALIZERS
             sorted.forEach(b => {
+                // Focus arrows either if the trigger is currently selected, or just render them at lower opacity
                 if (b.type === 'trigger' && b.layer === e_layer) {
                     const fromX = b.x * TILE + TILE/2;
                     const fromY = b.y * TILE + TILE/2;
                     const isSelected = e_selectedIds.has(b.id);
                     const alpha = isSelected ? 1 : 0.45;
-                    const color = isSelected ? '#a855f7' : '#ec4899';
+                    const color = isSelected ? '#a855f7' : '#ec4899'; // purple if selected, pink if general
 
                     edCtx.save();
                     edCtx.globalAlpha = alpha;
@@ -1092,28 +1050,36 @@
                         const targetY = (b.tData.y || 0) * TILE + TILE/2;
                         drawVisualArrow(edCtx, fromX, fromY, targetX, targetY, color, isSelected ? 3 : 1.5);
                         
-                        edCtx.strokeStyle = color; edCtx.lineWidth = 2;
-                        edCtx.beginPath(); edCtx.arc(targetX, targetY, 12, 0, Math.PI*2); edCtx.stroke();
+                        // Draw a target camera reticle
+                        edCtx.strokeStyle = color;
+                        edCtx.lineWidth = 2;
+                        edCtx.beginPath();
+                        edCtx.arc(targetX, targetY, 12, 0, Math.PI*2);
+                        edCtx.stroke();
                         edCtx.beginPath();
                         edCtx.moveTo(targetX - 16, targetY); edCtx.lineTo(targetX + 16, targetY);
                         edCtx.moveTo(targetX, targetY - 16); edCtx.lineTo(targetX, targetY + 16);
                         edCtx.stroke();
                     } 
                     else if ((b.action === 'MOVE_TAG' || b.action === 'ROTATE_TAG' || b.action === 'SET_PROPERTY') && b.tData && b.tData.tag) {
+                        // Find all blocks with target tag
                         const targets = e_blocks.filter(x => x.tag === b.tData.tag);
                         targets.forEach(t => {
                             const toX = t.x * TILE + TILE/2;
                             const toY = t.y * TILE + TILE/2;
                             drawVisualArrow(edCtx, fromX, fromY, toX, toY, color, isSelected ? 3 : 1.5);
                             
-                            edCtx.strokeStyle = color; edCtx.lineWidth = isSelected ? 3 : 1.5;
-                            edCtx.strokeRect(t.x*TILE - 2, t.y*TILE - 2, TILE + 4, TILE + 4);
+                            // Highlight the target block outline
+                            edCtx.strokeStyle = color;
+                            edCtx.lineWidth = isSelected ? 3 : 1.5;
+                            edCtx.strokeRect(t.x*TILE - 2, t.y*TILE - 2, (TILE * getBlockSize(t)) + 4, (TILE * getBlockSize(t)) + 4);
                             
+                            // If action isMOVE_TAG, draw a ghost block outline representing its destination
                             if (b.action === 'MOVE_TAG') {
                                 const destX = (t.x + (b.tData.mx || 0)) * TILE;
                                 const destY = (t.y + (b.tData.my || 0)) * TILE;
                                 edCtx.save();
-                                edCtx.strokeStyle = '#22c55e';
+                                edCtx.strokeStyle = '#22c55e'; // Green for movement endpoint
                                 edCtx.lineWidth = 1.5;
                                 edCtx.setLineDash([4, 4]);
                                 edCtx.strokeRect(destX + 2, destY + 2, TILE - 4, TILE - 4);
@@ -1136,23 +1102,23 @@
         window.editLevel = (id) => {
             const l = window.g_levels.find(x => x.id === id); if(!l) return;
             document.getElementById('editor-level-name').value = l.name;
-            e_meta = l.meta || { width: 40, height: 40, zoom: 1, maxHealth: 3 };
+            e_meta = l.meta || { width: 40, height: 40, zoom: 1, maxHealth: 3, gridStep: 1 };
             window.e_verified = false;
             
             try { 
                 const p = JSON.parse(l.grid);
-                if(p[0] && !p[0].id) e_blocks = p.map(b => ({ ...b, id: generateId(), layer: b.layer||0, rotation: b.rotation||0, glow: b.glow||0 }));
+                if(p[0] && !p[0].id) e_blocks = p.map(b => ({ ...b, id: generateId(), layer: b.layer||0, rotation: b.rotation||0, glow: b.glow||0, size: b.size||1, pushblock: !!b.pushblock }));
                 else e_blocks = p;
             } catch(e) { e_blocks = []; }
 
             if(!e_meta.layerCount) {
-                let maxL = 2;
+                let maxL = 2; // legacy default had L0, L1, L2
                 e_blocks.forEach(b => { if(b.layer > maxL) maxL = b.layer; });
                 e_meta.layerCount = maxL + 1;
             }
 
             window.editId = id; showScreen('editor'); e_cam = { x:(e_meta.width*TILE)/2, y:(e_meta.height*TILE)/2, zoom:1 }; 
-            setLayer(0);
+            setLayer(0); // Sets initial layer, renders buttons, and draws
         };
 
         window.saveLevel = async (isPriv) => {
@@ -1161,6 +1127,7 @@
             if(!e_blocks.some(x=>x.type==='start')) return showMsg("Error", "Need a Start block.");
             if(!e_blocks.some(x=>x.type==='end' || (x.type==='trigger' && x.action==='WIN'))) return showMsg("Warning", "No End or WIN trigger. Level impossible?");
 
+            // If making public, require verification
             if(!isPriv && !window.e_verified) {
                 return showMsg("Verification Required", "You must successfully playtest and beat the level before publishing it publicly.");
             }
@@ -1173,7 +1140,7 @@
                 }
                 else {
                     d.numericId = window.g_levels.reduce((m,x)=>Math.max(m, x.numericId||0), 0) + 1;
-                    d.category = 'user'; d.difficulty = null; d.rating = null;
+                    d.category = 'user'; d.difficulty = null; d.rating = null; d.scheduleDate = null;
                     const nid = "lvl_" + Date.now();
                     await setDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'levels', nid), d);
                     window.editId = nid; 
@@ -1199,7 +1166,8 @@
 
             g_players = [];
             g_blocks.filter(b=>b.type==='start').forEach(b => {
-                g_players.push({ x: b.px+TILE/4, y: b.py+TILE/4, w: TILE/2, h: TILE/2, health: g_meta.maxHealth, invuln: 0 });
+                const bw = TILE * getBlockSize(b);
+                g_players.push({ x: b.px+bw/4, y: b.py+bw/4, w: bw/2, h: bw/2, health: g_meta.maxHealth, invuln: 0 });
             });
             if(g_players.length === 0) g_players.push({ x: 0, y: 0, w: TILE/2, h: TILE/2, health: g_meta.maxHealth, invuln: 0 });
 
@@ -1207,6 +1175,7 @@
             g_tweens = [];
             isPlaying = true; renderHealth();
             if(g_loop) cancelAnimationFrame(g_loop);
+            g_particles = [];
             lastTime = performance.now();
             g_loop = requestAnimationFrame(gameLoop);
         }
@@ -1214,7 +1183,11 @@
         window.stopPlay = () => { 
             isPlaying = false; 
             cancelAnimationFrame(g_loop); 
-            if (g_meta && g_meta.isTest) { showScreen('editor'); } else { showScreen('menu'); }
+            if (g_meta && g_meta.isTest) {
+                showScreen('editor');
+            } else {
+                showScreen('menu'); 
+            }
         };
 
         function renderHealth() {
@@ -1227,18 +1200,22 @@
             }
         }
 
-        function AABB(x1, y1, w1, h1, x2, y2, w2, h2) { return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2; }
+        function AABB(x1, y1, w1, h1, x2, y2, w2, h2) {
+            return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+        }
 
         let lastTime = 0;
         function gameLoop(time) {
             if(!isPlaying) return;
             const dt = (time - lastTime) / 1000; lastTime = time;
             
+            // Process Tweens
             for(let i=g_tweens.length-1; i>=0; i--) {
-                let tw = g_tweens[i]; tw.t += dt;
+                let tw = g_tweens[i];
+                tw.t += dt;
                 let prog = Math.min(1, tw.t / tw.dur);
                 let ease = prog < 0.5 ? 2 * prog * prog : 1 - Math.pow(-2 * prog + 2, 2) / 2;
-                if(tw.type === 'move') { tw.obj.px = tw.startX + (tw.endX - tw.startX)*ease; tw.obj.py = tw.startY + (tw.endY - tw.startY)*ease; }
+                if(tw.type === 'move') { tw.obj.px = tw.startX + (tw.endX - tw.startX)*ease; tw.obj.py = tw.startY + (tw.endY - tw.startY)*ease; tw.obj.x = tw.obj.px / TILE; tw.obj.y = tw.obj.py / TILE; }
                 if(tw.type === 'rotate') { tw.obj.rotation = tw.startR + (tw.endR - tw.startR)*ease; }
                 if(tw.type === 'camera') { 
                     g_cam.x = tw.startX + (tw.endX - tw.startX)*ease; g_cam.y = tw.startY + (tw.endY - tw.startY)*ease;
@@ -1258,39 +1235,93 @@
             let alive = 0;
             const solids = g_blocks.filter(b => b.solid);
 
+            function tryPushBlock(block, pushDx, pushDy) {
+                const step = TILE * getBlockSize(block);
+                const nx = block.px + (pushDx !== 0 ? Math.sign(pushDx) * step : 0);
+                const ny = block.py + (pushDy !== 0 ? Math.sign(pushDy) * step : 0);
+                const bw = step, bh = step;
+                for (const other of solids) {
+                    if (other.id === block.id) continue;
+                    const ow = TILE * getBlockSize(other), oh = ow;
+                    if (AABB(nx, ny, bw, bh, other.px, other.py, ow, oh)) return false;
+                }
+                block.px = nx; block.py = ny; block.x = block.px / TILE; block.y = block.py / TILE;
+                return true;
+            }
+
             for(let p of g_players) {
                 if(p.health <= 0) continue; 
                 alive++;
                 if(p.invuln > 0) p.invuln -= dt;
 
-                let nx = p.x + dx; let ny = p.y + dy;
+                let nx = p.x + dx;
+                let ny = p.y + dy;
                 
+                // Slide Collision X
                 let hitX = false;
-                for(let b of solids) { if(AABB(nx, p.y, p.w, p.h, b.px, b.py, TILE, TILE)) { hitX = true; break; } }
+                for(let b of solids) {
+                    const bw = TILE * getBlockSize(b);
+                    if(AABB(nx, p.y, p.w, p.h, b.px, b.py, bw, bw)) {
+                        if(b.pushblock && dx !== 0 && tryPushBlock(b, dx, 0)) continue;
+                        hitX = true; break;
+                    }
+                }
                 if(!hitX) p.x = nx;
                 
+                // Slide Collision Y
                 let hitY = false;
-                for(let b of solids) { if(AABB(p.x, ny, p.w, p.h, b.px, b.py, TILE, TILE)) { hitY = true; break; } }
+                for(let b of solids) {
+                    const bw = TILE * getBlockSize(b);
+                    if(AABB(p.x, ny, p.w, p.h, b.px, b.py, bw, bw)) {
+                        if(b.pushblock && dy !== 0 && tryPushBlock(b, 0, dy)) continue;
+                        hitY = true; break;
+                    }
+                }
                 if(!hitY) p.y = ny;
 
+                // Level Bounds
                 if(p.x < 0) p.x = 0; if(p.y < 0) p.y = 0;
                 if(p.x > g_meta.width*TILE - p.w) p.x = g_meta.width*TILE - p.w;
                 if(p.y > g_meta.height*TILE - p.h) p.y = g_meta.height*TILE - p.h;
 
+                // Process Blocks / Triggers
                 for(let b of g_blocks) {
-                    if(AABB(p.x, p.y, p.w, p.h, b.px, b.py, TILE, TILE)) {
+                    const bw = TILE * getBlockSize(b);
+                    if(AABB(p.x, p.y, p.w, p.h, b.px, b.py, bw, bw)) {
+                        
                         if(b.type === 'damage' && p.invuln <= 0) {
-                            p.health--; p.invuln = 1.5; renderHealth();
-                            if(p.health <= 0) { loseGame(); return; }
-                        } else if (b.type === 'end' || (b.type === 'trigger' && b.action === 'WIN' && !b.triggered && (!b.listenTag || b.listenTag === ''))) {
-                            if(b.type === 'trigger') b.triggered = true; winGame(); return;
-                        } else if (b.type === 'trigger' && !b.triggered && (!b.listenTag || b.listenTag === '')) {
-                            b.triggered = true; triggerAction(b);
+                            p.health--; p.invuln = 1.5; 
+                            renderHealth();
+                            if(p.health <= 0) {
+                                loseGame();
+                                return;
+                            }
+                        } 
+                        else if (b.type === 'end' || (b.type === 'trigger' && b.action === 'WIN' && !b.triggered && (!b.listenTag || b.listenTag === ''))) {
+                            if(b.type === 'trigger') b.triggered = true;
+                            winGame();
+                            return;
+                        }
+                        else if (b.type === 'trigger' && !b.triggered && (!b.listenTag || b.listenTag === '')) {
+                            b.triggered = true;
+                            triggerAction(b);
                         }
                     }
                 }
             }
 
+            // Update particles
+            for (let i = g_particles.length - 1; i >= 0; i--) {
+                const p = g_particles[i];
+                p.t += dt;
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+                p.vx *= 0.98;
+                p.vy *= 0.98;
+                if (p.t >= p.life) g_particles.splice(i, 1);
+            }
+
+            // Camera follow
             if(alive > 0 && !g_cam.active && g_players[0]) {
                 g_cam.x += (g_players[0].x - g_cam.x) * 0.1;
                 g_cam.y += (g_players[0].y - g_cam.y) * 0.1;
@@ -1300,28 +1331,85 @@
             if(isPlaying) g_loop = requestAnimationFrame(gameLoop);
         }
 
+        function spawnParticlesFromBlocks(blocks, faceAngle = 0) {
+            const base = faceAngle * Math.PI / 180;
+            blocks.forEach(b => {
+                const bw = TILE * getBlockSize(b);
+                const count = Math.max(4, Math.min(12, Math.round(bw / 4)));
+                for (let i = 0; i < count; i++) {
+                    g_particles.push({
+                        x: b.px + bw / 2,
+                        y: b.py + bw / 2,
+                        vx: Math.cos(base + (Math.random() - 0.5) * 0.9) * (80 + Math.random() * 140),
+                        vy: Math.sin(base + (Math.random() - 0.5) * 0.9) * (80 + Math.random() * 140),
+                        life: 0.45 + Math.random() * 0.45,
+                        t: 0,
+                        size: 2 + Math.random() * 4,
+                        color: b.color || '#ffffff',
+                        rot: Math.random() * Math.PI * 2
+                    });
+                }
+            });
+        }
+
+        function rotateAroundPoint(px, py, cx, cy, angDeg) {
+            const a = angDeg * Math.PI / 180;
+            const s = Math.sin(a), c = Math.cos(a);
+            const dx = px - cx, dy = py - cy;
+            return { x: cx + dx * c - dy * s, y: cy + dx * s + dy * c };
+        }
+
         function triggerAction(triggerBlock) {
             let act = triggerBlock.action;
-            let td = triggerBlock.tData;
+            let td = triggerBlock.tData || {};
+            const face = triggerBlock.particleFace || 0;
             if(act === 'DIE') {
                 g_players.forEach(p => p.health = 0); renderHealth(); loseGame();
             } else if (act === 'CAMERA') {
                 g_cam.active = true;
                 g_tweens.push({ type: 'camera', startX: g_cam.x, startY: g_cam.y, startZ: g_cam.zoom, endX: td.x*TILE, endY: td.y*TILE, endZ: td.z, dur: td.dur, t: 0 });
             } else if (act === 'MOVE_TAG' && td.tag) {
-                g_blocks.filter(b => b.tag === td.tag).forEach(b => {
+                const targets = g_blocks.filter(b => b.tag === td.tag);
+                spawnParticlesFromBlocks(targets, face);
+                targets.forEach(b => {
                     g_tweens.push({ type: 'move', obj: b, startX: b.px, startY: b.py, endX: b.px + td.mx*TILE, endY: b.py + td.my*TILE, dur: td.dur, t: 0 });
                 });
             } else if (act === 'ROTATE_TAG' && td.tag) {
-                g_blocks.filter(b => b.tag === td.tag).forEach(b => {
-                    g_tweens.push({ type: 'rotate', obj: b, startR: b.rotation||0, endR: (b.rotation||0) + td.ang, dur: td.dur, t: 0 });
+                const targets = g_blocks.filter(b => b.tag === td.tag);
+                const centers = td.centerTag ? g_blocks.filter(b => b.tag === td.centerTag) : [];
+                spawnParticlesFromBlocks(targets, face);
+                let pivot = null;
+                if (centers.length) {
+                    let sx = 0, sy = 0, n = 0;
+                    centers.forEach(c => { sx += c.px + (TILE * getBlockSize(c))/2; sy += c.py + (TILE * getBlockSize(c))/2; n++; });
+                    pivot = { x: sx / n, y: sy / n };
+                }
+                targets.forEach(b => {
+                    const startR = b.rotation || 0;
+                    const endR = startR + td.ang;
+                    if (pivot) {
+                        const bw = TILE * getBlockSize(b);
+                        const center = { x: b.px + bw / 2, y: b.py + bw / 2 };
+                        const rotated = rotateAroundPoint(center.x, center.y, pivot.x, pivot.y, td.ang);
+                        g_tweens.push({ type: 'move', obj: b, startX: b.px, startY: b.py, endX: rotated.x - bw/2, endY: rotated.y - bw/2, dur: td.dur, t: 0 });
+                    }
+                    g_tweens.push({ type: 'rotate', obj: b, startR, endR, dur: td.dur, t: 0 });
                 });
             } else if (act === 'SET_PROPERTY' && td.tag && td.prop) {
-                g_blocks.filter(b => b.tag === td.tag).forEach(b => {
-                    if (td.prop === 'color') b.color = td.val;
-                    else if (td.prop === 'solid') b.solid = (td.val === 'true' || td.val === true || td.val === '1');
-                    else if (td.prop === 'alpha') b.alpha = parseFloat(td.val) !== undefined ? parseFloat(td.val) : 1;
-                    else if (td.prop === 'glow') b.glow = parseInt(td.val) || 0;
+                const targets = g_blocks.filter(b => b.tag === td.tag);
+                spawnParticlesFromBlocks(targets, face);
+                targets.forEach(b => {
+                    if (td.prop === 'color') {
+                        b.color = td.val;
+                    } else if (td.prop === 'solid') {
+                        b.solid = (td.val === 'true' || td.val === true || td.val === '1');
+                    } else if (td.prop === 'pushblock') {
+                        b.pushblock = (td.val === 'true' || td.val === true || td.val === '1');
+                    } else if (td.prop === 'alpha') {
+                        b.alpha = parseFloat(td.val) !== undefined ? parseFloat(td.val) : 1;
+                    } else if (td.prop === 'glow') {
+                        b.glow = parseInt(td.val) || 0;
+                    }
                 });
             }
         }
@@ -1331,6 +1419,7 @@
             const status = document.getElementById('play-status');
             status.innerText = "LEVEL CLEARED!";
             status.classList.add('text-emerald-500');
+            
             setTimeout(() => {
                 if(g_meta.isTest) {
                     window.e_verified = true;
@@ -1356,7 +1445,7 @@
             status.classList.add('text-rose-500');
             setTimeout(() => {
                 if(g_meta.isTest) showScreen('editor');
-                else startGame(g_meta.originalBlocks, g_meta.levelObj);
+                else startGame(g_meta.originalBlocks, g_meta.levelObj); // restart
             }, 2000);
         }
 
@@ -1368,40 +1457,59 @@
             plCtx.scale(g_cam.zoom, g_cam.zoom);
             plCtx.translate(-g_cam.x, -g_cam.y);
 
+            // Draw level blocks
             const sortedBlocks = [...g_blocks].sort((a,b) => a.layer - b.layer);
             sortedBlocks.forEach(b => {
+                const bw = TILE * getBlockSize(b);
                 plCtx.globalAlpha = b.alpha !== undefined ? b.alpha : 1;
+                
+                // Process upgraded Custom Block Glow Size
                 if (b.glow && b.glow > 0) {
                     plCtx.save();
                     plCtx.shadowBlur = b.glow * g_cam.zoom;
                     plCtx.shadowColor = b.color;
                     plCtx.fillStyle = b.color;
-                    plCtx.translate(b.px + TILE/2, b.py + TILE/2);
+                    
+                    plCtx.translate(b.px + bw/2, b.py + bw/2);
                     plCtx.rotate((b.rotation||0) * Math.PI / 180);
-                    plCtx.fillRect(-TILE/2, -TILE/2, TILE, TILE);
+                    plCtx.fillRect(-bw/2, -bw/2, bw, bw);
                     plCtx.restore();
                 } else {
                     plCtx.save();
                     plCtx.fillStyle = b.color;
-                    plCtx.translate(b.px + TILE/2, b.py + TILE/2);
+                    plCtx.translate(b.px + bw/2, b.py + bw/2);
                     plCtx.rotate((b.rotation||0) * Math.PI / 180);
-                    plCtx.fillRect(-TILE/2, -TILE/2, TILE, TILE);
+                    plCtx.fillRect(-bw/2, -bw/2, bw, bw);
                     plCtx.restore();
                 }
             });
 
+            // Draw particles from triggers
+            g_particles.forEach(pt => {
+                plCtx.save();
+                plCtx.globalAlpha = Math.max(0, 1 - (pt.t / pt.life));
+                plCtx.translate(pt.x, pt.y);
+                plCtx.rotate(pt.rot + pt.t * 8);
+                plCtx.fillStyle = pt.color;
+                plCtx.fillRect(-pt.size / 2, -pt.size / 2, pt.size, pt.size);
+                plCtx.restore();
+            });
+
+            // Draw Players (with Optional Glow property)
             g_players.forEach(p => {
                 if(p.health <= 0) return;
-                if(p.invuln > 0 && Math.floor(time / 150) % 2 === 0) return;
+                if(p.invuln > 0 && Math.floor(time / 150) % 2 === 0) return; // Damage blink
                 
                 plCtx.globalAlpha = 1;
                 plCtx.fillStyle = window.currentUser?.color || '#00ffff';
+                
                 if (window.currentUser?.glow) {
                     plCtx.shadowBlur = 20;
                     plCtx.shadowColor = window.currentUser.color || '#00ffff';
                 }
+                
                 plCtx.fillRect(p.x, p.y, p.w, p.h);
-                plCtx.shadowBlur = 0; 
+                plCtx.shadowBlur = 0; // reset shadow so it doesn't bleed
             });
 
             plCtx.restore();
